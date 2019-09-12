@@ -240,7 +240,6 @@ class UserInfoList extends Component<IProps, IState> {
 
   render() {
     const { data, loading } = this.props;
-    const { selectedRowKeys } = this.state;
     return (
       <PageHeaderWrapper>
         <Row

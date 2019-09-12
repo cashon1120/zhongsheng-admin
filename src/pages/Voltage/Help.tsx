@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Button, message, Modal } from 'antd';
+import { Card, message, Modal } from 'antd';
 import { connect } from 'dva';
 
 import Link from 'umi/link';
