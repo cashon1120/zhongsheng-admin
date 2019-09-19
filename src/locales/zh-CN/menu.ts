@@ -6,10 +6,10 @@ export default {
   'menu.voltage.watch': '汽车电压监控',
   'menu.voltage.help': '汽车电瓶救援记录',
 
-  'menu.car': '车辆车主信息',
-  'menu.car.carList': '车辆信息',
-  'menu.car.voltage': '电瓶管理',
-  'menu.car.driver': '车主信息',
+  'menu.carInfo': '车辆车主信息',
+  'menu.carInfo.carList': '车辆信息',
+  'menu.carInfo.voltage': '电瓶管理',
+  'menu.carInfo.driver': '车主信息',
 
   'menu.system': '系统管理',
   'menu.system.partment': '部门管理',

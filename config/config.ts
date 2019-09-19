@@ -121,25 +121,25 @@ export default {
         },
 
         {
-          path: '/car',
-          name: 'car',
+          path: '/CarInfo',
+          name: 'carInfo',
           icon: 'car',
           // authority: ['admin'],
           routes: [
             {
-              path: '/car/carList',
+              path: '/CarInfo/carList',
               name: 'carList',
-              component: './Question/List',
+              component: './CarInfo/CarList',
             },
             {
-              path: '/car/add',
+              path: '/CarInfo/voltage',
               name: 'voltage',
-              component: './Question/Add',
+              component: './CarInfo/VoltageList',
             },
             {
-              path: '/car/driver',
+              path: '/CarInfo/driver',
               name: 'driver',
-              component: './Question/Add',
+              component: './CarInfo/DriverList',
             },
           ],
         },
@@ -225,13 +225,13 @@ export default {
     basePath: '/',
   },
   chainWebpack: webpackPlugin,
-  /*
+
   proxy: {
-    '/server/api/': {
-      target: 'https://preview.pro.ant.design/',
+    '/api/': {
+      target: 'http://192.168.10.11:8082',
       changeOrigin: true,
-      pathRewrite: { '^/server': '' },
+      pathRewrite: { '^/api': '' },
     },
   },
-  */
+  
 } as IConfig;

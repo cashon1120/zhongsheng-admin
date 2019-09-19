@@ -12,10 +12,13 @@ import {
   InputNumber,
   TreeSelect,
   Cascader,
+  Upload,
+  Icon
 } from 'antd';
 import { connect } from 'dva';
 import { FormComponentProps } from 'antd/es/form';
 import { legalStr } from '@/utils/utils';
+import { UPLOAD_URL} from '../../../public/config'
 
 // import styles from './../index.less';
 
@@ -40,11 +43,18 @@ interface FormProps extends FormComponentProps {
   onCancel: () => void;
 }
 
+interface IState {
+  loading: boolean
+}
+
 interface IcolumnsObj {
   showStatu: string;
 }
 
-class ModalFrom extends Component<FormProps, {}> {
+class ModalFrom extends Component<FormProps, IState> {
+  state = {
+    loading: false
+  }
   render() {
     const {
       form,
@@ -113,7 +123,13 @@ class ModalFrom extends Component<FormProps, {}> {
     if (!isfooter) {
       footer.footer = null;
     }
-
+    const modalWidth: number = width ? width : 0
+    const uploadButton = (
+      <div>
+        <Icon type={this.state.loading ? 'loading' : 'plus'} />
+        <div className="ant-upload-text">Upload</div>
+      </div>
+    );
     return (
       <Modal
         destroyOnClose
@@ -127,7 +143,7 @@ class ModalFrom extends Component<FormProps, {}> {
         confirmLoading={confirmLoading || false}
         onCancel={onCancel}
       >
-        <Row type="flex" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+        <Row type="flex">
           {columns.map((item: any) => {
             let rulesObj: any[] = [];
             if (
@@ -176,7 +192,7 @@ class ModalFrom extends Component<FormProps, {}> {
               }
             }
             return (
-              <Col md={item.col || 23} sm={(item.col || 23) * 3} key={item.title}>
+              <Col md={modalWidth >= 800 ? 12 : 24} key={item.title}>
                 <FormItem
                   labelCol={{ span: 6 }}
                   wrapperCol={{ span: 15 }}
@@ -205,11 +221,11 @@ class ModalFrom extends Component<FormProps, {}> {
                             placeholder={fItem.placeholder ? fItem.placeholder : '请选择'}
                             className={fItem.childclassName}
                             disabled={fItem.disabled}
-                            onChange={(text, e) => {
+                            onChange={(e) => {
                               if (fItem.validatorSelect) {
-                                fItem.handleChange(text, e, form);
+                                fItem.handleChange(e, form);
                               } else if (fItem.handleChange) {
-                                fItem.handleChange(text, e);
+                                fItem.handleChange(e);
                               }
                             }}
                           >
@@ -218,7 +234,7 @@ class ModalFrom extends Component<FormProps, {}> {
                                 key={`selectIndex${selData.value || selData.id}`}
                                 value={selData.value || selData.id}
                               >
-                                {selData.name || (fItem.selectName && selData[fItem.selectName])}
+                                {selData.title || selData.model || (fItem.selectName && selData[fItem.selectName])}
                               </Option>
                             ))}
                           </Select>
@@ -234,7 +250,7 @@ class ModalFrom extends Component<FormProps, {}> {
                         componentTem = (
                           <DatePicker
                             style={{ width: '100%' }}
-                            placeholder=""
+                            placeholder={fItem.placeholder}
                             disabled={fItem.disabled}
                             {...formatRangePicker}
                           />
@@ -308,6 +324,19 @@ class ModalFrom extends Component<FormProps, {}> {
                             formatter={fItem.formatter}
                             onChange={e => fItem.onChange && fItem.onChange(e, form)}
                           />
+                        );
+                      }else if (fItem.componentType === 'Upload') {
+                        componentTem = (
+                          <Upload
+                          name="avatar"
+                          listType="picture-card"
+                          className="avatar-uploader"
+                          showUploadList={false}
+                          action={UPLOAD_URL}
+                          onChange={fItem.handleChange}
+                        >
+                          {fItem.imageUrl ? <img src={fItem.imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                        </Upload>
                         );
                       } else if (fItem.componentType === 'PassWorld') {
                         componentTem = (

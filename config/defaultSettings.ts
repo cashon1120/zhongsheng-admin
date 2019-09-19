@@ -1,12 +1,7 @@
-import { MenuTheme } from 'antd/es/menu';
 
 export type ContentWidth = 'Fluid' | 'Fixed';
 
 export interface DefaultSettings {
-  /**
-   * theme for nav menu
-   */
-  navTheme: MenuTheme;
   /**
    * primary color of ant design
    */

@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import { Card, Button, message, Modal } from 'antd';
 import { connect } from 'dva';
 import 'antd/dist/antd.css';
-import Link from 'umi/link';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from '@/components/StandardTable';
 import TableSearch from '../../components/TableSearch';
 import { ConnectProps, ConnectState } from '@/models/connect';
-import moment from 'moment';
+import AddNew from './VoltageAdd';
+
 const { confirm } = Modal;
 
 interface IProps extends ConnectProps {
@@ -18,7 +18,7 @@ interface IProps extends ConnectProps {
 interface IState {
   loading: boolean;
   modalVisible: boolean;
-  selectedRowKeys: any[];
+  modalData: any;
   searchData: {
     [key: string]: any;
   };
@@ -28,17 +28,12 @@ interface IState {
   };
 }
 
-class QuestionList extends Component<IProps, IState> {
+class VoltageList extends Component<IProps, IState> {
   state = {
     loading: false,
     modalVisible: false,
-    selectedRowKeys: [],
-    searchData: {
-      name: '',
-      status: '',
-      startTime: '',
-      endTime: '',
-    },
+    modalData: {},
+    searchData: {},
     pageInfo: {
       pageSize: 10,
       pageNum: 1,
@@ -47,23 +42,46 @@ class QuestionList extends Component<IProps, IState> {
 
   columns = [
     {
-      title: '题目',
-      dataIndex: 'name',
-      key: 'name',
+      title: '电瓶型号',
+      dataIndex: 'model',
+      key: 'model',
     },
     {
-      title: '创建日期',
-      dataIndex: 'status',
-      key: 'status',
+      title: '生产厂家',
+      dataIndex: 'factory',
+      key: 'factory',
+    },{
+      title: '生产日期',
+      dataIndex: 'productionDate',
+      key: 'productionDate',
+    },{
+      title: '电压报警值',
+      dataIndex: 'lowVoltageAlarmValue',
+      key: 'lowVoltageAlarmValue',
+    },{
+      title: '电压断电值',
+      dataIndex: 'automaticPoweroffValue',
+      key: 'automaticPoweroffValue',
+    },{
+      title: '搭配车型',
+      dataIndex: 'batteryVehicleModels',
+      key: 'batteryVehicleModels',
+    },{
+      title: '备注',
+      dataIndex: 'remark',
+      key: 'remark',
+    },{
+      title: '添加日期',
+      dataIndex: 'createAt',
+      key: 'createAt',
     },
     {
       title: '操作',
       width: 200,
       render: (record: any) => (
         <div className="table-operate">
-          <Link to={`/question/add/${record.id}`}>详情</Link>
-          <a onClick={() => this.hadleCheckOut(record.id)}>修改</a>
-          <a onClick={() => this.hadleCheckOut(record.id)}>删除</a>
+          <a onClick={() => this.handleEdit(record)}>修改</a>
+          <a onClick={() => this.handleDel(record.id)}>删除</a>
         </div>
       ),
     },
@@ -72,17 +90,6 @@ class QuestionList extends Component<IProps, IState> {
   componentDidMount() {
     this.initData();
   }
-
-  handleTriggerModal = () => {
-    const { modalVisible } = this.state;
-    this.setState({
-      modalVisible: !modalVisible,
-    });
-  };
-
-  handleSelectRows = (selectedRowKeys: any[]) => {
-    this.setState({ selectedRowKeys });
-  };
 
   // 加载数据
   initData(params?: any) {
@@ -107,7 +114,7 @@ class QuestionList extends Component<IProps, IState> {
 
     if (dispatch) {
       dispatch({
-        type: 'question/fetch',
+        type: 'carInfo/fetchVoltage',
         payload: {
           ...searchParams,
           ...pageInfo,
@@ -117,19 +124,78 @@ class QuestionList extends Component<IProps, IState> {
     }
   }
 
+  // 提交模态框
+  handleSubmitModal = () => {
+    this.handleTriggerModal();
+    this.initData()
+  };
+
+  // 显示/隐藏模态框
+  handleTriggerModal = () => {
+    const { modalVisible } = this.state;
+    this.setState({
+      modalVisible: !modalVisible,
+    });
+  };
+
+  // 添加新数据
+  handleAddNew = () => {
+    this.setState({
+      modalData: {},
+    });
+    this.handleTriggerModal();
+  };
+
+  // 编辑数据
+  handleEdit = (record: any) => {
+    this.setState({
+      modalData: {
+        ...record,
+      },
+    });
+    this.handleTriggerModal();
+  };
+
+  // 删除数据
+  handleDel = (id: string) => {
+    const { dispatch } = this.props;
+    const callback = (res: any) => {
+      if (res.code === 1) {
+        message.success('操作成功');
+        this.initData()
+      }else{
+        message.error(res.msg)
+      }
+    };
+    confirm({
+      title: '系统提示',
+      content: '确认要删除该记录吗？',
+      onOk: () => {
+        if (dispatch) {
+          dispatch({
+            type: 'carInfo/delVoltage',
+            payload: {
+              id,
+            },
+            callback,
+          });
+        }
+      },
+    });
+  };
+
   // 配置搜索条件
   getSerarchColumns = () => {
     const serarchColumns = [
       {
-        title: '题目',
-        dataIndex: 'title',
+        title: '电频型号',
+        dataIndex: 'model',
         componentType: 'Input',
       },
       {
-        title: '创建日期',
-        dataIndex: 'times',
-        componentType: 'RangePicker',
-        col: 8,
+        title: '车辆型号',
+        dataIndex: 'type',
+        componentType: 'Input',
       },
     ];
     return serarchColumns;
@@ -138,20 +204,11 @@ class QuestionList extends Component<IProps, IState> {
   // 搜索
   handleSearch = (values: any) => {
     const { searchData } = this.state;
-    let startTime = '';
-    let endTime = '';
-    if (values.times) {
-      startTime = moment(values.times[0]).format('YYYY-MM-DD HH:mm:ss');
-      endTime = moment(values.times[1]).format('YYYY-MM-DD HH:mm:ss');
-    }
     this.setState(
       {
         searchData: {
           ...searchData,
-          name: values.name,
-          status: values.status,
-          startTime,
-          endTime,
+          ...values
         },
       },
       () => {
@@ -172,45 +229,9 @@ class QuestionList extends Component<IProps, IState> {
     );
   };
 
-  // 导出详情
-  exportFiel = () => {
-    const { dispatch } = this.props;
-    const { selectedRowKeys } = this.state;
-    if (selectedRowKeys.length === 0) {
-      message.error('请勾选要导出的数据');
-      return;
-    }
-    if (dispatch) {
-      dispatch({ type: 'userInfo/exportFile', payload: {} });
-    }
-  };
-
-  hadleCheckOut = (id: string) => {
-    const { dispatch } = this.props;
-    const callback = (response: any) => {
-      if (response.success) {
-        message.success('操作成功');
-      }
-    };
-    confirm({
-      title: '审核信息',
-      content: '审核通过后，考生即可扫描二维码考试，是否通过审核？',
-      onOk: () => {
-        if (dispatch) {
-          dispatch({
-            type: 'userInfo/checkOut',
-            payload: {
-              id,
-            },
-            callback,
-          });
-        }
-      },
-    });
-  };
-
   render() {
     const { data, loading } = this.props;
+    const {modalVisible, modalData} = this.state
     return (
       <PageHeaderWrapper>
         <Card>
@@ -223,9 +244,7 @@ class QuestionList extends Component<IProps, IState> {
               />
             </div>
             <div>
-              <Link to="/question/add">
-                <Button type="primary">新增题库</Button>
-              </Link>
+                <Button type="primary"onClick={this.handleAddNew}>添加电瓶</Button>
             </div>
           </div>
           <StandardTable
@@ -236,12 +255,18 @@ class QuestionList extends Component<IProps, IState> {
             onChangeCombine={(params: object) => this.initData(params)}
           />
         </Card>
+        <AddNew
+          modalVisible={modalVisible}
+          modalData={modalData}
+          onCancel={this.handleTriggerModal}
+          onOk={this.handleSubmitModal}
+        />
       </PageHeaderWrapper>
     );
   }
 }
 
-export default connect(({ question, loading }: ConnectState) => ({
-  data: question.data,
-  loading: loading.models.userInfo,
-}))(QuestionList);
+export default connect(({ carInfo, loading }: ConnectState) => ({
+  data: carInfo.voltageData,
+  loading: loading.models.carInfo,
+}))(VoltageList);
