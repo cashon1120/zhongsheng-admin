@@ -9,7 +9,7 @@ import { LoginModelState } from './login';
 import { UserInfoModelState } from './userInfo';
 import { ReportModelState } from './report';
 import { QcodeModelState } from './qcode';
-import { AccountModelState } from './account';
+import { SystemModelState } from './system';
 import { CarInfoModelState } from './carInfo';
 
 export {
@@ -18,7 +18,7 @@ export {
   UserModelState,
   LoginModelState,
   UserInfoModelState,
-  AccountModelState,
+  SystemModelState,
   CarInfoModelState,
 };
 
@@ -28,7 +28,8 @@ export interface Loading {
   models: {
     global?: boolean;
     login?: boolean;
-    carInfo?: boolean
+    carInfo?: boolean;
+    system?: boolean
   };
 }
 
@@ -37,6 +38,7 @@ export interface ConnectState {
   loading: Loading;
   settings: SettingModelState;
   carInfo: CarInfoModelState;
+  system: SystemModelState
 }
 
 export type Effect = (

@@ -132,6 +132,12 @@ export default {
               component: './CarInfo/CarList',
             },
             {
+              path: '/CarInfo/carDetail/:id',
+              name: 'carDetail',
+              component: './CarInfo/CarDetail',
+              hideInMenu: true
+            },
+            {
               path: '/CarInfo/voltage',
               name: 'voltage',
               component: './CarInfo/VoltageList',
@@ -140,6 +146,17 @@ export default {
               path: '/CarInfo/driver',
               name: 'driver',
               component: './CarInfo/DriverList',
+            },
+            {
+              path: '/CarInfo/driverDetail/:id',
+              name: 'driverDetail',
+              component: './CarInfo/DriverDetail',
+              hideInMenu: true
+            },
+            {
+              path: '/CarInfo/CarType',
+              name: 'type',
+              component: './CarInfo/TypeList',
             },
           ],
         },
@@ -153,17 +170,17 @@ export default {
             {
               path: '/system/partment',
               name: 'partment',
-              component: './Question/List',
+              component: './System/Partment',
             },
             {
               path: '/system/user',
               name: 'user',
-              component: './Question/Add',
+              component: './System/User',
             },
             {
-              path: '/system/driver',
+              path: '/system/role',
               name: 'role',
-              component: './Question/Add',
+              component: './System/Role',
             },
           ],
         },

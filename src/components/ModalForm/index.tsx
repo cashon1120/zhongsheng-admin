@@ -11,14 +11,13 @@ import {
   Col,
   InputNumber,
   TreeSelect,
-  Cascader,
-  Upload,
-  Icon
+  Cascader
 } from 'antd';
 import { connect } from 'dva';
 import { FormComponentProps } from 'antd/es/form';
+import UploadImg from '../UploadImg'
 import { legalStr } from '@/utils/utils';
-import { UPLOAD_URL} from '../../../public/config'
+
 
 // import styles from './../index.less';
 
@@ -124,12 +123,6 @@ class ModalFrom extends Component<FormProps, IState> {
       footer.footer = null;
     }
     const modalWidth: number = width ? width : 0
-    const uploadButton = (
-      <div>
-        <Icon type={this.state.loading ? 'loading' : 'plus'} />
-        <div className="ant-upload-text">Upload</div>
-      </div>
-    );
     return (
       <Modal
         destroyOnClose
@@ -192,7 +185,7 @@ class ModalFrom extends Component<FormProps, IState> {
               }
             }
             return (
-              <Col md={modalWidth >= 800 ? 12 : 24} key={item.title}>
+              <Col md={item.blockCol ? 24 : modalWidth >= 800 ? 12 : 24} key={item.title}>
                 <FormItem
                   labelCol={{ span: 6 }}
                   wrapperCol={{ span: 15 }}
@@ -229,7 +222,7 @@ class ModalFrom extends Component<FormProps, IState> {
                               }
                             }}
                           >
-                            {fItem.dataSource.map((selData: any) => (
+                            {(fItem.dataSource || []).map((selData: any) => (
                               <Option
                                 key={`selectIndex${selData.value || selData.id}`}
                                 value={selData.value || selData.id}
@@ -327,16 +320,13 @@ class ModalFrom extends Component<FormProps, IState> {
                         );
                       }else if (fItem.componentType === 'Upload') {
                         componentTem = (
-                          <Upload
-                          name="avatar"
-                          listType="picture-card"
-                          className="avatar-uploader"
-                          showUploadList={false}
-                          action={UPLOAD_URL}
-                          onChange={fItem.handleChange}
-                        >
-                          {fItem.imageUrl ? <img src={fItem.imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-                        </Upload>
+                          <UploadImg
+                            dataSource={fItem.pictures || []}
+                            form={form}
+                            maxImgLen={4}
+                            name={fItem.dataIndex}
+                            onChange={fItem.handleChange}
+                          />
                         );
                       } else if (fItem.componentType === 'PassWorld') {
                         componentTem = (

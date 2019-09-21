@@ -51,7 +51,10 @@ export const SEX_TYPE = [
     id: 1
   }, {
     title: '女',
-    id: 0
+    id: 2
+  }, {
+    title: '保密',
+    id: 3
   }
 ]
 

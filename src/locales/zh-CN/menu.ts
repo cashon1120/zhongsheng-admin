@@ -8,8 +8,11 @@ export default {
 
   'menu.carInfo': '车辆车主信息',
   'menu.carInfo.carList': '车辆信息',
+  'menu.carInfo.carDetail': '车辆详情',
   'menu.carInfo.voltage': '电瓶管理',
   'menu.carInfo.driver': '车主信息',
+  'menu.carInfo.driverDetail': '车主详情',
+  'menu.carInfo.type': '车辆型号',
 
   'menu.system': '系统管理',
   'menu.system.partment': '部门管理',

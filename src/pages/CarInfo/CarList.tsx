@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Card, Button, message, Modal } from 'antd';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import 'antd/dist/antd.css';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from '@/components/StandardTable';
@@ -90,6 +91,7 @@ class CarList extends Component<IProps, IState> {
       width: 200,
       render: (record: any) => (
         <div className="table-operate">
+          <Link to={`/carInfo/carDetail/${record.id}`}>查看</Link>
           <a onClick={() => this.handleEdit(record)}>修改</a>
           <a onClick={() => this.handleDel(record.id)}>删除</a>
         </div>

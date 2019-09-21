@@ -7,7 +7,7 @@ const setFileList = (dataSource : any, maxImgLen : any) => {
   const maxLen = maxImgLen === undefined
     ? 1
     : maxImgLen;
-  const fileList = [];
+  const fileList: any[] = [];
   let fileListArr = [dataSource];
   if (dataSource === '' || dataSource === null || dataSource === undefined) {
     fileListArr = [];
@@ -35,12 +35,15 @@ const setFileList = (dataSource : any, maxImgLen : any) => {
 };
 
 interface IProps {
-  onChangeFile: (list: any) => void
-  acceptType: any
+  form: any;
   name: string
   onChange: any
-  disabled: boolean, 
-  listType: any
+  maxImgLen?: number
+  disabled?: boolean, 
+  dataSource?: any
+  acceptType?: any
+  listType?: any
+  onChangeFile?: (list: any) => void
 }
 
 interface IState {
@@ -56,8 +59,8 @@ interface IState {
 
 }
 
-class PicturesWall extends Component<IProps, IState> {
-  constructor(props) {
+class UploadImg extends Component<IProps, IState> {
+  constructor(props: any) {
     super(props);
     const { dataSource, maxImgLen, form, name } = props;
     const maxLen = maxImgLen === undefined
@@ -78,7 +81,7 @@ class PicturesWall extends Component<IProps, IState> {
   }
 
   // 同步更新父组件图片值
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: any) {
     const { dataSource, maxImgLen } = nextProps;
     const { isFirst } = this.state;
     const { fileList: flist } = this.state;
@@ -95,7 +98,7 @@ class PicturesWall extends Component<IProps, IState> {
   }
 
   // 设置表单 (maxImgLen=1 的时候传回一个字符串, maxImgLen > 1 的时候传回一个数组)
-  setFormValue = newImageList => {
+  setFormValue = (newImageList: any[]) => {
     const { maxImgLen, name, form } = this.state;
     let formList = [];
     if (maxImgLen > 1) {
@@ -107,36 +110,20 @@ class PicturesWall extends Component<IProps, IState> {
         ? newImageList[0].url
         : '';
     }
-    form.setFieldsValue({ [name]: formList });
+    form.setFieldsValue({[name]: formList });
   };
 
   // 取消预览
   handleCancel = () => this.setState({ previewVisible: false })
 
   // 预览
-  handlePreview = file => {
-    if (file.name.indexOf('doc') > 0 || file.name.indexOf('docx') > 0 || file.name.indexOf('pdf') > 0 || file.name.indexOf('xls') > 0 || file.name.indexOf('xlsx') > 0 || file.name.indexOf('ppt') > 0 || file.name.indexOf('pptx') > 0) {
-      return
-    }
-    let previewType = 1
+  handlePreview = (file: any) => {
     let previewImage = file.response && file.response.data || file.url || file.thumbUrl
-    if (file.type === 'video/mp4' || file.data) {
-      previewType = 2
-      previewImage = file.response && file.response.data || file.data
-    } else if (file.url) {
-        const temp = file
-          .url
-          .split('.')
-        previewType = temp[temp.length - 1] === 'mp4'
-          ? 2
-          : 1
-      }
-
-    this.setState({ previewImage, previewVisible: true, previewType });
+    this.setState({ previewImage, previewVisible: true});
   }
 
   // 删除图片
-  handleDeleteImg = file => {
+  handleDeleteImg = (file: any) => {
     const { onChangeFile } = this.props;
     const { fileList } = this.state;
     const index = fileList.indexOf(file);
@@ -149,12 +136,13 @@ class PicturesWall extends Component<IProps, IState> {
     };
 
   // 上传图片事件
-  handleChange = e => {
+  handleChange = (e: any) => {
     let { acceptType } = this.props
     if (!acceptType) {
       acceptType = '.jpg, .gif, .jpeg, .png, .mp4'
     }
     const { fileList, file } = e
+    // IE判断上传格式
     const temp = file
       .name
       .split('.')
@@ -169,7 +157,7 @@ class PicturesWall extends Component<IProps, IState> {
   }
 
   render() {
-    const { previewVisible, previewImage, previewType, fileList, maxImgLen } = this.state;
+    const { previewVisible, previewImage, fileList, maxImgLen } = this.state;
     const { acceptType, disabled, listType } = this.props
     const uploadButton = (
       <div>
@@ -225,4 +213,4 @@ class PicturesWall extends Component<IProps, IState> {
     );
   }
 }
-export default PicturesWall
+export default UploadImg

@@ -97,6 +97,7 @@ const LoginModel : ModelType = {
       payload
     }, {put, call}) {
       const response = yield call(fetchCar, payload);
+      console.log(response)
       if (response) {
         yield put({type: 'saveCarData', payload: response});
       }

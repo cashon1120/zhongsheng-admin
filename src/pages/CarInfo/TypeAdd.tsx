@@ -18,7 +18,6 @@ interface IProps {
 }
 
 interface IState {
-  pictureList: any []
   confirmLoading : boolean;
   voltageAlarmValue: number,
   voltageAutomaticPoweroffValue: number,
@@ -27,7 +26,6 @@ interface IState {
 class AddCar extends Component < IProps,
 IState > {
   state = {
-    pictureList: [],
     confirmLoading: false,
     voltageAlarmValue: 0,
     voltageAutomaticPoweroffValue: 0,
@@ -89,13 +87,7 @@ IState > {
     })
   }
 
- // 上传图片回调, 设置对应图片数据列表
- handlePicChange = (name: string, fileList: any) => {
-  this.setState({pictureList: fileList})
-}
-
   modalFromColumns() {
-    const {pictureList} = this.state
     const {
       voltageData,
       modalData: {
@@ -118,47 +110,45 @@ IState > {
       voltageAutomaticPoweroffValue,} = this.state
     return [
       {
-        title: '车牌号',
+        title: '车辆品牌',
         dataIndex: 'plate',
         componentType: 'Input',
         initialValue: plate,
-        requiredMessage: '请输入车牌号',
+        requiredMessage: '请选择车辆品牌',
         required: true,
-        placeholder: '请输入车牌号'
+        placeholder: '请选择车辆品牌'
       }, {
-        title: '车辆品牌',
+        title: '车辆型号',
         dataIndex: 'brands',
         componentType: 'Input',
         initialValue: brands,
-        requiredMessage: '请输入车辆品牌',
-        required: true,
-        placeholder: '请输入车辆品牌'
-      }, {
-        title: '车辆型号',
-        dataIndex: 'model',
-        componentType: 'Input',
-        initialValue: model,
         requiredMessage: '请输入车辆型号',
         required: true,
         placeholder: '请输入车辆型号'
-      },{
+      }, {
         title: '生产厂家',
         dataIndex: 'model',
         componentType: 'Input',
         initialValue: model,
-        requiredMessage: '请输入车辆型号',
+        requiredMessage: '请输入生产厂家',
         required: true,
-        placeholder: '请输入车辆型号'
-      },{
+        placeholder: '请输入生产厂家'
+      }, {
         title: '生产日期',
-        dataIndex: 'factoryTime',
-        componentType: 'DatePicker',
-        initialValue: factoryTime
-          ? moment(factoryTime)
-          : '',
-        requiredMessage: '请选择生产日期',
-        placeholder: '请选择车生产日期',
+        dataIndex: 'color',
+        componentType: 'Input',
+        initialValue: color,
+        requiredMessage: '请输入生产日期',
         required: true,
+        placeholder: '请输入生产日期'
+      }, {
+        title: '电瓶生产厂家',
+        dataIndex: 'frameNumber',
+        componentType: 'Input',
+        initialValue: frameNumber,
+        requiredMessage: '请选择电瓶生产厂家',
+        required: true,
+        placeholder: '请选择电瓶生产厂家'
       }, {
         title: '电瓶型号',
         dataIndex: 'batteryModel',
@@ -189,79 +179,11 @@ IState > {
         placeholder: '请选择电瓶型号',
         disabled: true
       }, {
-        title: '车辆颜色',
-        dataIndex: 'color',
-        componentType: 'Input',
-        initialValue: color,
-        requiredMessage: '请输入车辆颜色',
-        required: true,
-        placeholder: '请输入车辆颜色'
-      }, {
-        title: '车架号',
-        dataIndex: 'frameNumber',
-        componentType: 'Input',
-        initialValue: frameNumber,
-        requiredMessage: '请输入车架号',
-        required: true,
-        placeholder: '请输入车架号'
-      },  {
-        title: '购买时间',
-        dataIndex: 'purchaseTime',
-        componentType: 'DatePicker',
-        initialValue: purchaseTime
-          ? moment(purchaseTime)
-          : '',
-        requiredMessage: '请选择出厂时间',
-        placeholder: '请选择车出厂时间',
-        required: true,
-      }, {
-        title: '初始里程',
-        dataIndex: 'initialMileage',
-        componentType: 'InputNumber',
-        initialValue: initialMileage,
-        requiredMessage: '请输入初始里程',
-        required: true,
-        placeholder: '请输入初始里程'
-      }, {
-        title: '车主联系方式',
-        dataIndex: 'ownerContact',
-        componentType: 'Input',
-        initialValue: ownerContact,
-        requiredMessage: '请输入车主联系方式',
-        required: true,
-        placeholder: '请输入车主联系方式'
-      }, {
-        title: '车主姓名',
-        dataIndex: 'ownerName',
-        componentType: 'Input',
-        initialValue: ownerName,
-        requiredMessage: '请输入车主姓名',
-        required: true,
-        placeholder: '请输入车主姓名'
-      }, {
-        title: '车载设备ID',
-        dataIndex: 'vehicleEquipmentId',
-        componentType: 'Input',
-        initialValue: vehicleEquipmentId,
-        requiredMessage: '请输入车载设备ID',
-        required: true,
-        placeholder: '请输入车载设备ID'
-      },{
         title: '备注',
         dataIndex: 'remark',
-        componentType: 'Input',
+        componentType: 'TextArea',
         initialValue: remark,
         placeholder: '请输入备注'
-      },{
-        title: '车辆图片',
-        dataIndex: 'imgList',
-        componentType: 'Upload',
-        initialValue: vehicleEquipmentId,
-        handleChange: this.handlePicChange,
-        pictures: pictureList,
-        requiredMessage: '请上传车辆图片',
-        required: true,
-        placeholder: '请上传车辆图片'
       }
     ];
   }
@@ -275,8 +197,8 @@ IState > {
       <Fragment>
         <ModalFrom
           title={id
-          ? '修改车辆'
-          : '添加车辆'}
+          ? '修改车型'
+          : '添加车型'}
           columns={this.modalFromColumns()}
           onOk={this.handleSubmitModal}
           visible={modalVisible}

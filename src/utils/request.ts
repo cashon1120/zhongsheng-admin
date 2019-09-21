@@ -52,7 +52,7 @@ const request = extend({
 request
   .interceptors
   .request
-  .use(async(url : string, options : any) => {
+  .use(async(url?: string | undefined, options? : any) => {
     const token = localStorage.getItem('token');
     if (token) {
       const headers = {
@@ -66,20 +66,30 @@ request
         }
       };
     }
+    return {
+      url: url,
+      options: {
+        ...options,
+      }
+    };
   });
 
 // response拦截器, 处理response
-request
-  .interceptors
-  .response
-  .use(async(response : any) => {
+request.interceptors.response.use(async(response: any, options: any) => {
     const token = response
       .headers
       .get('token')
     if (token) {
       localStorage.setItem('token', token)
     }
+    const data = await response.clone().json();
+    if(data.code === -2){
+      location.href = '/login';
+      return 
+    }
     return response;
   });
+
+  
 
 export default request;

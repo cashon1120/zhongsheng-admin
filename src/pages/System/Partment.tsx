@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import { Card, Button, message, Modal } from 'antd';
 import { connect } from 'dva';
 import 'antd/dist/antd.css';
-import Link from 'umi/link';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from '@/components/StandardTable';
 import TableSearch from '../../components/TableSearch';
 import { ConnectProps, ConnectState } from '@/models/connect';
-import AddNew from './DriverAdd';
+import AddNew from './PartmentAdd';
+
 const { confirm } = Modal;
 
 interface IProps extends ConnectProps {
@@ -28,7 +28,7 @@ interface IState {
   };
 }
 
-class carInfoList extends Component<IProps, IState> {
+class Partment extends Component<IProps, IState> {
   state = {
     loading: false,
     modalVisible: false,
@@ -42,57 +42,24 @@ class carInfoList extends Component<IProps, IState> {
 
   columns = [
     {
-      title: '姓名',
-      dataIndex: 'realName',
-      key: 'realName',
+      title: '部门名称',
+      dataIndex: 'departName',
+      key: 'departName',
     },
     {
-      title: '性别',
-      dataIndex: 'sex',
-      key: 'sex',
-    },{
-      title: '身份证号',
-      dataIndex: 'identificationNumber',
-      key: 'identificationNumber',
-    },{
-      title: '车辆数',
-      dataIndex: 'lowVoltageAlarmValue',
-      key: 'lowVoltageAlarmValue',
-    },{
-      title: '联系方式',
-      dataIndex: 'concatPhone',
-      key: 'concatPhone',
-    },{
-      title: '名族',
-      dataIndex: 'nationality',
-      key: 'nationality',
-    },{
-      title: '所属行业',
-      dataIndex: 'industry',
-      key: 'industry',
-    },{
-      title: '年收入',
-      dataIndex: 'annualIncome',
-      key: 'annualIncome',
-    },{
-      title: '地址',
-      dataIndex: 'residentialAddress',
-      key: 'residentialAddress',
+      title: '说明',
+      dataIndex: 'remark',
+      key: 'remark',
     },{
       title: '添加时间',
       dataIndex: 'crtAt',
       key: 'crtAt',
-    },{
-      title: '备注',
-      dataIndex: 'remarks',
-      key: 'remarks',
     },
     {
       title: '操作',
       width: 200,
       render: (record: any) => (
         <div className="table-operate">
-          <Link to={`/carInfo/driverDetail/${record.id}`}>查看</Link>
           <a onClick={() => this.handleEdit(record)}>修改</a>
           <a onClick={() => this.handleDel(record.id)}>删除</a>
         </div>
@@ -127,7 +94,7 @@ class carInfoList extends Component<IProps, IState> {
 
     if (dispatch) {
       dispatch({
-        type: 'carInfo/fetchDriver',
+        type: 'system/fetchPartment',
         payload: {
           ...searchParams,
           ...pageInfo,
@@ -135,10 +102,6 @@ class carInfoList extends Component<IProps, IState> {
         },
       });
     }
-  }
-
-  handleDetail(id: number){
-
   }
 
   // 提交模态框
@@ -190,7 +153,7 @@ class carInfoList extends Component<IProps, IState> {
       onOk: () => {
         if (dispatch) {
           dispatch({
-            type: 'carInfo/delVoltage',
+            type: 'system/delPartment',
             payload: {
               id,
             },
@@ -205,20 +168,10 @@ class carInfoList extends Component<IProps, IState> {
   getSerarchColumns = () => {
     const serarchColumns = [
       {
-        title: '车主姓名',
-        dataIndex: 'realName',
+        title: '部门名称',
+        dataIndex: 'departName',
         componentType: 'Input',
-      },
-      {
-        title: '联系方式',
-        dataIndex: 'concatPhone',
-        componentType: 'Input',
-      },
-      {
-        title: '所属行业',
-        dataIndex: 'industry',
-        componentType: 'Input',
-      },
+      }
     ];
     return serarchColumns;
   };
@@ -266,7 +219,7 @@ class carInfoList extends Component<IProps, IState> {
               />
             </div>
             <div>
-                <Button type="primary"onClick={this.handleAddNew}>添加车主</Button>
+                <Button type="primary"onClick={this.handleAddNew}>添加部门</Button>
             </div>
           </div>
           <StandardTable
@@ -288,7 +241,7 @@ class carInfoList extends Component<IProps, IState> {
   }
 }
 
-export default connect(({ carInfo, loading }: ConnectState) => ({
-  data: carInfo.driverData,
-  loading: loading.models.carInfo,
-}))(carInfoList);
+export default connect(({ system, loading }: ConnectState) => ({
+  data: system.partmentData,
+  loading: loading.models.system,
+}))(Partment);

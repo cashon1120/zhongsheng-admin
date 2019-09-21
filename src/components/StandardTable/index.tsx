@@ -69,7 +69,7 @@ class StandardTable extends React.PureComponent<IProps, IState> {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const { columns } = this.props;
     const nColumns = this.filterColumns(columns);
     this.setState({ pcolumns: columns, columns: nColumns });
@@ -77,7 +77,7 @@ class StandardTable extends React.PureComponent<IProps, IState> {
     this.countAmountWidth(nColumns);
   }
 
-  componentWillReceiveProps(nextProps: any) {
+  UNSAFE_componentWillReceiveProps(nextProps: any) {
     const { pcolumns } = this.state;
     const { columns } = nextProps;
     if (columns && JSON.stringify(pcolumns) !== JSON.stringify(columns)) {
