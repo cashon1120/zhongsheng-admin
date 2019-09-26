@@ -9,7 +9,8 @@ import {ANNUAL_INCOME, SEX_TYPE} from '../../../public/config'
 
 interface IProps {
   modalVisible : boolean;
-  voltageData : any,
+  nationalityData : any[],
+  professionData: any[]
   dispatch : Dispatch;
   modalData : {
     [key : string]: any;
@@ -37,10 +38,20 @@ IState > {
   };
 
   componentDidMount() {
-    const {voltageData, dispatch} = this.props
-    if (voltageData.length <= 0) {
+    const {professionData, nationalityData, dispatch} = this.props
+    if (professionData.length <= 0) {
       dispatch({
-        type: 'global/fetchVoltage',
+        type: 'global/fetchProfession',
+        payload: {
+          pageNum: 1,
+          pageSize: 100
+        }
+      });
+    }
+  
+    if (nationalityData.length <= 0) {
+      dispatch({
+        type: 'global/fetchNationality',
         payload: {
           pageNum: 1,
           pageSize: 100
@@ -80,22 +91,15 @@ IState > {
     });
   };
 
-  setVoltageValue = (value : any) => {
-    const {voltageData} = this.props
-    voltageData.forEach((item : any) => {
-      if (item.id === value) {
-        this.setState({voltageAlarmValue: item.lowVoltageAlarmValue, voltageAutomaticPoweroffValue: item.automaticPoweroffValue})
-      }
-    })
-  }
-
-  handleUploadChange = (e: any) => {
+  handleUploadChange = (e : any) => {
     console.log(e)
   }
 
   modalFromColumns() {
     const {cardFrontUrl, reverseSideCardUrl} = this.state
     const {
+      professionData,
+      nationalityData,
       modalData: {
         realName,
         sex,
@@ -144,7 +148,7 @@ IState > {
         requiredMessage: '请选择名族',
         required: true,
         placeholder: '请选择名族',
-        dataSource: []
+        dataSource: nationalityData
       }, {
         title: '身份证号',
         dataIndex: 'identificationNumber',
@@ -161,7 +165,7 @@ IState > {
         requiredMessage: '请选择所属行业',
         required: true,
         placeholder: '请选择所属行业',
-        dataSource: []
+        dataSource: professionData
       }, {
         title: '年收入',
         dataIndex: 'annualIncome',
@@ -185,7 +189,7 @@ IState > {
         componentType: 'Upload',
         initialValue: cardFront,
         requiredMessage: '请上传身份证正面',
-        required: true,
+        // required: true,
         handleChange: this.handleUploadChange,
         imgUrl: cardFrontUrl
       }, {
@@ -194,7 +198,7 @@ IState > {
         componentType: 'Upload',
         initialValue: reverseSideCard,
         requiredMessage: '请上传身份证反面',
-        required: true,
+        // required: true,
         imgUrl: reverseSideCardUrl
       }, {
         title: '备注',
@@ -228,4 +232,4 @@ IState > {
   }
 }
 
-export default connect(({global} : ConnectState) => ({voltageData: global.voltageData}))(AddDriver);
+export default connect(({global} : ConnectState) => ({professionData: global.professionData, nationalityData: global.nationalityData}))(AddDriver);

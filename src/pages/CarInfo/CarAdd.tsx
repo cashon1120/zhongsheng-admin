@@ -5,10 +5,12 @@ import {ConnectState} from '../../models/connect';
 import ModalFrom from '@/components/ModalForm';
 import moment from 'moment';
 import {message} from 'antd';
+import { CAR_BRAND } from '../../../public/config'
 
 interface IProps {
   modalVisible : boolean;
-  voltageData : any,
+  voltageData : any[],
+  typeData: any[]
   dispatch : Dispatch;
   modalData : {
     [key : string]: any;
@@ -20,8 +22,11 @@ interface IProps {
 interface IState {
   pictureList: any []
   confirmLoading : boolean;
-  voltageAlarmValue: number,
-  voltageAutomaticPoweroffValue: number,
+  voltageAlarmValue: number | undefined,
+  voltageAutomaticPoweroffValue: number | undefined,
+  typeData: any[]
+  voltageId: number | string
+  voltageName: string
 }
 
 class AddCar extends Component < IProps,
@@ -29,12 +34,16 @@ IState > {
   state = {
     pictureList: [],
     confirmLoading: false,
-    voltageAlarmValue: 0,
-    voltageAutomaticPoweroffValue: 0,
+    voltageAlarmValue: undefined,
+    voltageAutomaticPoweroffValue: undefined,
+    typeData: [],
+    voltageId: '',
+    voltageName: ''
   };
 
+  formModalRef: any = ''
   componentDidMount() {
-    const {voltageData, dispatch} = this.props
+    const {voltageData, typeData, dispatch} = this.props
     if (voltageData.length <= 0) {
       dispatch({
         type: 'global/fetchVoltage',
@@ -44,6 +53,28 @@ IState > {
         }
       });
     }
+
+    if (typeData.length <= 0) {
+      const callback = (res: any) => {
+        if(res.code === 1){
+          this.setState({
+            typeData: res.data.list
+          })
+        }
+      }
+      dispatch({
+        type: 'global/fetchType',
+        payload: {
+          pageNum: 1,
+          pageSize: 100
+        },
+        callback
+      });
+    }
+  }
+
+  onRefChild = (ref: any) => {
+    this.formModalRef = ref
   }
 
   handleSubmitModal = (fields : any) => {
@@ -77,11 +108,35 @@ IState > {
     });
   };
 
+  setTypeValue = (value: any) => {
+    const {typeData} = this.props
+    let filterTypeData:any[] = []
+    typeData.forEach((item: any) => {
+      if(item.vehicleBrands === value){
+        filterTypeData.push(item)
+      }
+    })
+    this.setState({
+      typeData: filterTypeData
+    },() => {
+      this.formModalRef.clearFormValue('model', undefined)
+    })
+  }
+
+
   setVoltageValue = (value: any) => {
-    const {voltageData} = this.props
+    const {voltageData, typeData} = this.props
+    let voltageId = ''
+    typeData.forEach((item: any) => {
+      if(item.vehicleModel === value){
+        voltageId = item.batteryId
+      }
+    })
     voltageData.forEach((item: any) => {
-      if(item.id === value){
+      if(item.id === voltageId){
         this.setState({
+          voltageId,
+          voltageName: item.model,
           voltageAlarmValue: item.lowVoltageAlarmValue,
           voltageAutomaticPoweroffValue: item.automaticPoweroffValue
         })
@@ -89,22 +144,22 @@ IState > {
     })
   }
 
+
+
  // 上传图片回调, 设置对应图片数据列表
  handlePicChange = (name: string, fileList: any) => {
   this.setState({pictureList: fileList})
 }
 
   modalFromColumns() {
-    const {pictureList} = this.state
+    // const {pictureList} = this.state
     const {
-      voltageData,
       modalData: {
         plate,
         brands,
         model,
         color,
         frameNumber,
-        batteryModel,
         factoryTime,
         purchaseTime,
         initialMileage,
@@ -115,7 +170,7 @@ IState > {
       }
     } = this.props;
     const { voltageAlarmValue,
-      voltageAutomaticPoweroffValue,} = this.state
+      voltageAutomaticPoweroffValue, typeData, voltageName} = this.state
     return [
       {
         title: '车牌号',
@@ -128,29 +183,27 @@ IState > {
       }, {
         title: '车辆品牌',
         dataIndex: 'brands',
-        componentType: 'Input',
+        componentType: 'Select',
         initialValue: brands,
-        requiredMessage: '请输入车辆品牌',
+        requiredMessage: '请选择车辆品牌',
         required: true,
-        placeholder: '请输入车辆品牌'
+        placeholder: '请选择车辆品牌',
+        dataSource: CAR_BRAND,
+        handleChange: this.setTypeValue
       }, {
         title: '车辆型号',
         dataIndex: 'model',
-        componentType: 'Input',
+        componentType: 'Select',
+        selectName: 'vehicleModel',
+        value: 'vehicleModel',
         initialValue: model,
         requiredMessage: '请输入车辆型号',
         required: true,
-        placeholder: '请输入车辆型号'
+        placeholder: '请输入车辆型号',
+        dataSource: typeData,
+        handleChange: this.setVoltageValue
       },{
-        title: '生产厂家',
-        dataIndex: 'model',
-        componentType: 'Input',
-        initialValue: model,
-        requiredMessage: '请输入车辆型号',
-        required: true,
-        placeholder: '请输入车辆型号'
-      },{
-        title: '生产日期',
+        title: '出厂日期',
         dataIndex: 'factoryTime',
         componentType: 'DatePicker',
         initialValue: factoryTime
@@ -162,19 +215,18 @@ IState > {
       }, {
         title: '电瓶型号',
         dataIndex: 'batteryModel',
-        componentType: 'Select',
-        initialValue: batteryModel,
+        componentType: 'Input',
+        disabled: true,
+        initialValue: voltageName,
         requiredMessage: '请输入电瓶型号',
         required: true,
         placeholder: '请选择电瓶型号',
-        dataSource: voltageData,
-        handleChange: this.setVoltageValue
       },
        {
         title: '电压报警值',
         dataIndex: 'lowVoltageAlarmValue',
         componentType: 'InputNumber',
-        initialValue: voltageAlarmValue,
+        initialValue: voltageAlarmValue, 
         requiredMessage: '请选择电瓶型号',
         required: true,
         placeholder: '请选择电瓶型号',
@@ -201,9 +253,10 @@ IState > {
         dataIndex: 'frameNumber',
         componentType: 'Input',
         initialValue: frameNumber,
-        requiredMessage: '请输入车架号',
+        requiredMessage: '请输入正确的车架号',
         required: true,
-        placeholder: '请输入车架号'
+        placeholder: '请输入车架号',
+        maxLength: 17
       },  {
         title: '购买时间',
         dataIndex: 'purchaseTime',
@@ -243,26 +296,28 @@ IState > {
         dataIndex: 'vehicleEquipmentId',
         componentType: 'Input',
         initialValue: vehicleEquipmentId,
-        requiredMessage: '请输入车载设备ID',
+        requiredMessage: '请输入正确的车载设备ID(8位)',
         required: true,
-        placeholder: '请输入车载设备ID'
+        placeholder: '请输入车载设备ID',
+        maxLength: 8
       },{
         title: '备注',
         dataIndex: 'remark',
         componentType: 'Input',
         initialValue: remark,
         placeholder: '请输入备注'
-      },{
-        title: '车辆图片',
-        dataIndex: 'imgList',
-        componentType: 'Upload',
-        initialValue: vehicleEquipmentId,
-        handleChange: this.handlePicChange,
-        pictures: pictureList,
-        requiredMessage: '请上传车辆图片',
-        required: true,
-        placeholder: '请上传车辆图片'
       }
+      // ,{
+      //   title: '车辆图片',
+      //   dataIndex: 'imgList',
+      //   componentType: 'Upload',
+      //   initialValue: vehicleEquipmentId,
+      //   handleChange: this.handlePicChange,
+      //   pictures: pictureList,
+      //   requiredMessage: '请上传车辆图片',
+      //   required: true,
+      //   placeholder: '请上传车辆图片'
+      // }
     ];
   }
 
@@ -282,10 +337,11 @@ IState > {
           visible={modalVisible}
           confirmLoading={confirmLoading}
           width={1000}
+          onRefChild={this.onRefChild}
           onCancel={onCancel}/>
       </Fragment>
     );
   }
 }
 
-export default connect(({global} : ConnectState) => ({voltageData: global.voltageData}))(AddCar);
+export default connect(({global} : ConnectState) => ({voltageData: global.voltageData, typeData: global.typeData}))(AddCar);

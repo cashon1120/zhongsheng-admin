@@ -3,10 +3,11 @@ import {connect} from 'dva';
 import {Dispatch} from 'redux';
 import {ConnectState} from '../../models/connect';
 import ModalFrom from '@/components/ModalForm';
-import moment from 'moment';
 import {message} from 'antd';
+import { CAR_BRAND } from '../../../public/config'
 
 interface IProps {
+  form: any;
   modalVisible : boolean;
   voltageData : any,
   dispatch : Dispatch;
@@ -20,7 +21,7 @@ interface IProps {
 interface IState {
   confirmLoading : boolean;
   voltageAlarmValue: number,
-  voltageAutomaticPoweroffValue: number,
+  voltageAutomaticPoweroffValue: number
 }
 
 class AddCar extends Component < IProps,
@@ -28,7 +29,7 @@ IState > {
   state = {
     confirmLoading: false,
     voltageAlarmValue: 0,
-    voltageAutomaticPoweroffValue: 0,
+    voltageAutomaticPoweroffValue: 0
   };
 
   componentDidMount() {
@@ -57,19 +58,25 @@ IState > {
         message.error(res.msg)
         return
       }
+      dispatch({
+        type: 'global/fetchType',
+        payload: {
+          pageNum: 1,
+          pageSize: 100
+        }
+      });
       onOk(fields);
     };
-    const factoryTime = moment(fields.factoryTime).format('YYYY-MM-DD HH:mm:ss')
-    const purchaseTime = moment(fields.purchaseTime).format('YYYY-MM-DD HH:mm:ss')
+    delete fields.batteryFactory
+    delete fields.lowVoltageAlarmValue
+    delete fields.automaticPoweroffValue
     dispatch({
       type: id
-        ? 'carInfo/updateCar'
-        : 'carInfo/addCar',
+        ? 'carInfo/updateType'
+        : 'carInfo/addType',
       payload: {
         id,
-        ...fields,
-        factoryTime,
-        purchaseTime
+        ...fields
       },
       callback
     });
@@ -91,69 +98,37 @@ IState > {
     const {
       voltageData,
       modalData: {
-        plate,
-        brands,
-        model,
-        color,
-        frameNumber,
-        batteryModel,
-        factoryTime,
-        purchaseTime,
-        initialMileage,
-        ownerName,
-        ownerContact,
-        vehicleEquipmentId,
+        vehicleBrands,
+        vehicleModel,
+        batteryId,
         remark
       }
     } = this.props;
     const { voltageAlarmValue,
-      voltageAutomaticPoweroffValue,} = this.state
+      voltageAutomaticPoweroffValue } = this.state
     return [
       {
         title: '车辆品牌',
-        dataIndex: 'plate',
-        componentType: 'Input',
-        initialValue: plate,
+        dataIndex: 'vehicleBrands',
+        componentType: 'Select',
+        initialValue: vehicleBrands,
         requiredMessage: '请选择车辆品牌',
         required: true,
-        placeholder: '请选择车辆品牌'
+        placeholder: '请选择车辆品牌',
+        dataSource: CAR_BRAND
       }, {
         title: '车辆型号',
-        dataIndex: 'brands',
+        dataIndex: 'vehicleModel',
         componentType: 'Input',
-        initialValue: brands,
+        initialValue: vehicleModel,
         requiredMessage: '请输入车辆型号',
         required: true,
         placeholder: '请输入车辆型号'
       }, {
-        title: '生产厂家',
-        dataIndex: 'model',
-        componentType: 'Input',
-        initialValue: model,
-        requiredMessage: '请输入生产厂家',
-        required: true,
-        placeholder: '请输入生产厂家'
-      }, {
-        title: '生产日期',
-        dataIndex: 'color',
-        componentType: 'Input',
-        initialValue: color,
-        requiredMessage: '请输入生产日期',
-        required: true,
-        placeholder: '请输入生产日期'
-      }, {
-        title: '电瓶生产厂家',
-        dataIndex: 'frameNumber',
-        componentType: 'Input',
-        initialValue: frameNumber,
-        requiredMessage: '请选择电瓶生产厂家',
-        required: true,
-        placeholder: '请选择电瓶生产厂家'
-      }, {
         title: '电瓶型号',
-        dataIndex: 'batteryModel',
+        dataIndex: 'batteryId',
         componentType: 'Select',
-        initialValue: batteryModel,
+        initialValue: batteryId,
         requiredMessage: '请输入电瓶型号',
         required: true,
         placeholder: '请选择电瓶型号',
@@ -203,7 +178,6 @@ IState > {
           onOk={this.handleSubmitModal}
           visible={modalVisible}
           confirmLoading={confirmLoading}
-          width={1000}
           onCancel={onCancel}/>
       </Fragment>
     );

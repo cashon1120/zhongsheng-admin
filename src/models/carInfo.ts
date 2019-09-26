@@ -9,17 +9,25 @@ import {
   addCar,
   updateCar,
   delCar,
+  detailCar,
   fetchDriver,
   addDriver,
   updateDriver,
   delDriver,
-  detailDriver
+  detailDriver,
+  fetchType,
+  addType,
+  updateType,
+  delType,
+  fetchFactoryList
 } from '@/services/carInfo';
 
 export interface CarInfoModelState {
   voltageData : any;
   carData : any;
   driverData : any
+  typeData: any
+  factoryData: any
 }
 
 export interface ModelType {
@@ -34,16 +42,24 @@ export interface ModelType {
     addCar: Effect;
     updateCar: Effect;
     delCar: Effect;
+    detailCar: Effect;
     fetchDriver: Effect;
     addDriver: Effect;
     updateDriver: Effect;
     delDriver: Effect;
-    detailDriver: Effect
+    detailDriver: Effect;
+    fetchType: Effect;
+    addType: Effect;
+    delType: Effect;
+    updateType: Effect;
+    fetchFactoryList: Effect;
   };
   reducers : {
     saveVoltageData: Reducer < {} >;
     saveCarData: Reducer < {} >;
     saveDriverData: Reducer < {} >;
+    saveTypeData: Reducer < {} >
+    saveFactoryData: Reducer < {} >
   };
 }
 
@@ -53,16 +69,22 @@ const LoginModel : ModelType = {
   state: {
     voltageData: [],
     carData: [],
-    driverData: []
+    driverData: [],
+    typeData: [],
+    factoryData: []
   },
 
   effects: {
     *fetchVoltage({
-      payload
+      payload,
+      callback
     }, {put, call}) {
       const response = yield call(fetchVoltage, payload);
       if (response) {
         yield put({type: 'saveVoltageData', payload: response});
+      }
+      if(callback){
+        callback(response)
       }
     },
     *addVoltage({
@@ -97,7 +119,6 @@ const LoginModel : ModelType = {
       payload
     }, {put, call}) {
       const response = yield call(fetchCar, payload);
-      console.log(response)
       if (response) {
         yield put({type: 'saveCarData', payload: response});
       }
@@ -117,6 +138,16 @@ const LoginModel : ModelType = {
     }, {call}) {
       const response = yield call(delCar, payload);
       if (callback) {
+        callback(response);
+      }
+    },
+    *detailCar({
+      payload,
+      callback
+    }, {call}) {
+      const response = yield call(detailCar, payload);
+      if (callback) {
+        console.log(1)
         callback(response);
       }
     },
@@ -174,6 +205,51 @@ const LoginModel : ModelType = {
       if (callback) {
         callback(response);
       }
+    },
+    // 车型
+    *fetchType({
+      payload
+    }, {put, call}) {
+      const response = yield call(fetchType, payload);
+      if (response) {
+        yield put({type: 'saveTypeData', payload: response});
+      }
+    },
+    *addType({
+      payload,
+      callback
+    }, {call}) {
+      const response = yield call(addType, payload);
+      if (callback) {
+        callback(response);
+      }
+    },
+    *delType({
+      payload,
+      callback
+    }, {call}) {
+      const response = yield call(delType, payload);
+      if (callback) {
+        callback(response);
+      }
+    },
+    *updateType({
+      payload,
+      callback
+    }, {call}) {
+      const response = yield call(updateType, payload);
+      if (callback) {
+        callback(response);
+      }
+    },
+    *fetchFactoryList({
+      payload,
+      callback
+    }, {put, call}) {
+      const response = yield call(fetchFactoryList, payload);
+      if (response) {
+        yield put({type: 'saveFactoryData', payload: response});
+      }
     }
   },
 
@@ -194,6 +270,18 @@ const LoginModel : ModelType = {
       return {
         ...state,
         driverData: payload.data
+      };
+    },
+    saveTypeData(state, {payload}) {
+      return {
+        ...state,
+        typeData: payload.data
+      };
+    },
+    saveFactoryData(state, {payload}) {
+      return {
+        ...state,
+        factoryData: payload.data
       };
     }
   }

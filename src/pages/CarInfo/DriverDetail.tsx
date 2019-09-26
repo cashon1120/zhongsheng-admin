@@ -2,21 +2,25 @@ import React, {Component} from 'react';
 import {Card, Row, Col, Descriptions, Spin} from 'antd';
 import {connect} from 'dva';
 import 'antd/dist/antd.css';
+import {Dispatch} from 'redux';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import {ConnectProps, ConnectState} from '@/models/connect';
 import StandardTable from '@/components/StandardTable';
 import carImg from '../../assets/car.jpg'
-import { formatSex, getAge} from '../../utils/utils'
+import {formatSex, getAge} from '../../utils/utils'
 
 interface IProps extends ConnectProps {
   data?: any;
   loading?: boolean;
+  nationalityData: any;
+  dispatch : Dispatch;
+  professionData: any;
 }
 
 interface IState {
   loading : boolean;
   id : number;
-  driverInfo: any;
+  driverInfo : any;
   pageInfo : {
     pageSize: number;
     pageNum: number;
@@ -25,7 +29,7 @@ interface IState {
 
 class DriverDetail extends Component < IProps,
 IState > {
-  constructor(props: any) {
+  constructor(props : any) {
     super(props)
     this.state = {
       loading: false,
@@ -60,29 +64,55 @@ IState > {
 
   componentDidMount() {
     this.initData();
-  }
-
-  // 加载数据
-  initData(params?: any) {
-    const {id} = this.state
-    const {dispatch} = this.props;
-    const callback = (res: any) => {
-      if(res.code === 1){
-        this.setState({
-          driverInfo: res.data
-        })
-      }
-    }
-    if (dispatch) {
+    const {professionData, nationalityData, dispatch} = this.props
+    if (professionData.length <= 0) {
       dispatch({
-        type: 'carInfo/detailDriver',
+        type: 'global/fetchProfession',
         payload: {
-          id
-        },
-        callback
+          pageNum: 1,
+          pageSize: 100
+        }
+      });
+    }
+  
+    if (nationalityData.length <= 0) {
+      dispatch({
+        type: 'global/fetchNationality',
+        payload: {
+          pageNum: 1,
+          pageSize: 100
+        }
       });
     }
   }
+
+  // 加载数据
+  initData() {
+    const {dispatch} = this.props;
+    const {id} = this.state
+    const callback = (res : any) => {
+      if (res.code === 1) {
+        this.setState({driverInfo: res.data})
+      }
+    }
+    if (dispatch) {
+      dispatch({type: 'carInfo/detailDriver', payload: {
+          id
+        }, callback});
+    }
+  }
+
+  formatNationality = (type : number) => {
+    const {nationalityData} = this.props
+    let str = ''
+    nationalityData.forEach((item: any) => {
+      if(item.value === type){
+        str = item.name
+      }
+    })
+    return str
+  }
+
 
   render() {
     const {data, loading} = this.props;
@@ -100,7 +130,7 @@ IState > {
                 <Descriptions.Item label="联系电话">{driverInfo.concatPhone}</Descriptions.Item>
                 <Descriptions.Item label="性别">{formatSex(driverInfo.sex)}</Descriptions.Item>
                 <Descriptions.Item label="所属行业">{driverInfo.industry}</Descriptions.Item>
-                <Descriptions.Item label="名族">{driverInfo.nationality}</Descriptions.Item>
+                <Descriptions.Item label="名族">{this.formatNationality(driverInfo.nationality)}</Descriptions.Item>
                 <Descriptions.Item label="年龄">{getAge(driverInfo.identificationNumber)}</Descriptions.Item>
                 <Descriptions.Item label="身份证号码">{driverInfo.identificationNumber}</Descriptions.Item>
                 <Descriptions.Item label="居住地址">{driverInfo.residentialAddress}</Descriptions.Item>
@@ -117,7 +147,7 @@ IState > {
             columns={this.columns}
             data={data || []}
             loading={loading}
-            onChangeCombine={(params : object) => this.initData(params)}/>
+            onChangeCombine={(params : object) => this.initData()}/>
         </Card>
         <Spin size="large" spinning={loading} className="spin"/>
       </PageHeaderWrapper>
@@ -125,4 +155,5 @@ IState > {
   }
 }
 
-export default connect(({carInfo, loading} : ConnectState) => ({data: carInfo.carData, loading: loading.models.carInfo}))(DriverDetail);
+export default connect(({global, loading} : ConnectState) => ({professionData: global.professionData, nationalityData: global.nationalityData, loading: loading.models.carInfo}))(DriverDetail);
+

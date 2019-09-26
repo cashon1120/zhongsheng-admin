@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
-import { Card, Button, message, Modal } from 'antd';
-import { connect } from 'dva';
+import React, {Component} from 'react';
+import {Card, Button, message, Modal} from 'antd';
+import {connect} from 'dva';
 import Link from 'umi/link';
 import 'antd/dist/antd.css';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import StandardTable from '@/components/StandardTable';
 import TableSearch from '../../components/TableSearch';
-import { ConnectProps, ConnectState } from '@/models/connect';
+import {ConnectProps, ConnectState} from '@/models/connect';
 import AddNew from './CarAdd';
 import {VOLTAGE_STATE} from '../../../public/config'
 
-const { confirm } = Modal;
+const {confirm} = Modal;
 
 interface IProps extends ConnectProps {
   data?: any;
@@ -18,19 +18,20 @@ interface IProps extends ConnectProps {
 }
 
 interface IState {
-  loading: boolean;
-  modalVisible: boolean;
-  modalData: any;
-  searchData: {
-    [key: string]: any;
+  loading : boolean;
+  modalVisible : boolean;
+  modalData : any;
+  searchData : {
+    [key : string]: any;
   };
-  pageInfo: {
+  pageInfo : {
     pageSize: number;
     pageNum: number;
   };
 }
 
-class CarList extends Component<IProps, IState> {
+class CarList extends Component < IProps,
+IState > {
   state = {
     loading: false,
     modalVisible: false,
@@ -38,65 +39,63 @@ class CarList extends Component<IProps, IState> {
     searchData: {},
     pageInfo: {
       pageSize: 10,
-      pageNum: 1,
-    },
+      pageNum: 1
+    }
   };
 
   columns = [
     {
-      title: '汽车品牌',
-      dataIndex: 'brands',
-      key: 'brands',
-    },
-    {
       title: '车牌号',
       dataIndex: 'plate',
-      key: 'plate',
+      key: 'plate'
+    }, {
+      title: '汽车品牌',
+      dataIndex: 'brands',
+      key: 'brands'
     },{
-      title: '车架号',
-      dataIndex: 'frameNumber',
-      key: 'frameNumber',
-    },{
+      title: '车辆型号',
+      dataIndex: 'model',
+      key: 'model'
+    }, {
       title: '车主姓名',
       dataIndex: 'ownerName',
-      key: 'ownerName',
-    },{
+      key: 'ownerName'
+    }, {
       title: '联系方式',
       dataIndex: 'ownerContact',
-      key: 'ownerContact',
-    },{
+      key: 'ownerContact'
+    }, {
       title: '车载设备ID',
       dataIndex: 'vehicleEquipmentId',
-      key: 'vehicleEquipmentId',
-    },{
+      key: 'vehicleEquipmentId'
+    }, {
       title: '实时公里数',
       dataIndex: 'initialMileage',
-      key: 'initialMileage',
-    },{
+      key: 'initialMileage'
+    }, {
       title: '电压状态',
       dataIndex: 'voltageState',
       key: 'voltageState',
-      render: (voltageState: number) => {
+      render: (voltageState : number) => {
         let state = ''
-        VOLTAGE_STATE.forEach((item: any) => {
-          if(item.id === voltageState){
-            state = item. value
+        VOLTAGE_STATE.forEach((item : any) => {
+          if (item.id === voltageState) {
+            state = item.value
           }
         })
         return <span>{state}</span>
       }
-    },
-    {
+    }, {
       title: '操作',
       width: 200,
-      render: (record: any) => (
+      render: (record : any) => (
         <div className="table-operate">
           <Link to={`/carInfo/carDetail/${record.id}`}>查看</Link>
           <a onClick={() => this.handleEdit(record)}>修改</a>
           <a onClick={() => this.handleDel(record.id)}>删除</a>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   componentDidMount() {
@@ -105,8 +104,8 @@ class CarList extends Component<IProps, IState> {
 
   // 加载数据
   initData(params?: any) {
-    const { dispatch } = this.props;
-    const { pageInfo, searchData } = this.state;
+    const {dispatch} = this.props;
+    const {pageInfo, searchData} = this.state;
     const searchParams = {};
     // 拼接查询字段
     for (let key in searchData) {
@@ -119,8 +118,8 @@ class CarList extends Component<IProps, IState> {
       this.setState({
         pageInfo: {
           pageNum: params.pageNum,
-          pageSize: params.pageSize,
-        },
+          pageSize: params.pageSize
+        }
       });
     }
 
@@ -130,8 +129,8 @@ class CarList extends Component<IProps, IState> {
         payload: {
           ...searchParams,
           ...pageInfo,
-          ...params,
-        },
+          ...params
+        }
       });
     }
   }
@@ -144,38 +143,36 @@ class CarList extends Component<IProps, IState> {
 
   // 显示/隐藏模态框
   handleTriggerModal = () => {
-    const { modalVisible } = this.state;
+    const {modalVisible} = this.state;
     this.setState({
-      modalVisible: !modalVisible,
+      modalVisible: !modalVisible
     });
   };
 
   // 添加新数据
   handleAddNew = () => {
-    this.setState({
-      modalData: {},
-    });
+    this.setState({modalData: {}});
     this.handleTriggerModal();
   };
 
   // 编辑数据
-  handleEdit = (record: any) => {
+  handleEdit = (record : any) => {
     this.setState({
       modalData: {
-        ...record,
-      },
+        ...record
+      }
     });
     this.handleTriggerModal();
   };
 
   // 删除数据
-  handleDel = (id: string) => {
-    const { dispatch } = this.props;
-    const callback = (res: any) => {
+  handleDel = (id : string) => {
+    const {dispatch} = this.props;
+    const callback = (res : any) => {
       if (res.code === 1) {
         message.success('操作成功');
         this.initData()
-      }else{
+      } else {
         message.error(res.msg)
       }
     };
@@ -184,15 +181,11 @@ class CarList extends Component<IProps, IState> {
       content: '确认要删除该记录吗？',
       onOk: () => {
         if (dispatch) {
-          dispatch({
-            type: 'carInfo/delVoltage',
-            payload: {
-              id,
-            },
-            callback,
-          });
+          dispatch({type: 'carInfo/delCar', payload: {
+              id
+            }, callback});
         }
-      },
+      }
     });
   };
 
@@ -202,47 +195,40 @@ class CarList extends Component<IProps, IState> {
       {
         title: '电频型号',
         dataIndex: 'model',
-        componentType: 'Input',
-      },
-      {
+        componentType: 'Input'
+      }, {
         title: '车辆型号',
         dataIndex: 'type',
-        componentType: 'Input',
-      },
+        componentType: 'Input'
+      }
     ];
     return serarchColumns;
   };
 
   // 搜索
-  handleSearch = (values: any) => {
-    const { searchData } = this.state;
-    this.setState(
-      {
-        searchData: {
-          ...searchData,
-          ...values
-        },
-      },
-      () => {
-        this.initData();
-      },
-    );
+  handleSearch = (values : any) => {
+    const {searchData} = this.state;
+    this.setState({
+      searchData: {
+        ...searchData,
+        ...values
+      }
+    }, () => {
+      this.initData();
+    },);
   };
 
   // 重置搜索
   handleFormReset = () => {
-    this.setState(
-      {
-        searchData: {},
-      },
-      () => {
-        this.initData();
-      },
-    );
+    this.setState({
+      searchData: {}
+    }, () => {
+      this.initData();
+    },);
   };
 
   render() {
-    const { data, loading } = this.props;
+    const {data, loading} = this.props;
     const {modalVisible, modalData} = this.state
     return (
       <PageHeaderWrapper>
@@ -252,11 +238,10 @@ class CarList extends Component<IProps, IState> {
               <TableSearch
                 columns={this.getSerarchColumns()}
                 handleSearch={this.handleSearch}
-                handleFormReset={this.handleFormReset}
-              />
+                handleFormReset={this.handleFormReset}/>
             </div>
             <div>
-                <Button type="primary"onClick={this.handleAddNew}>添加车辆</Button>
+              <Button type="primary" onClick={this.handleAddNew}>添加车辆</Button>
             </div>
           </div>
           <StandardTable
@@ -264,21 +249,16 @@ class CarList extends Component<IProps, IState> {
             columns={this.columns}
             data={data || []}
             loading={loading}
-            onChangeCombine={(params: object) => this.initData(params)}
-          />
+            onChangeCombine={(params : object) => this.initData(params)}/>
         </Card>
         <AddNew
           modalVisible={modalVisible}
           modalData={modalData}
           onCancel={this.handleTriggerModal}
-          onOk={this.handleSubmitModal}
-        />
+          onOk={this.handleSubmitModal}/>
       </PageHeaderWrapper>
     );
   }
 }
 
-export default connect(({ carInfo, loading }: ConnectState) => ({
-  data: carInfo.carData,
-  loading: loading.models.carInfo,
-}))(CarList);
+export default connect(({carInfo, loading} : ConnectState) => ({data: carInfo.carData, loading: loading.models.carInfo}))(CarList);

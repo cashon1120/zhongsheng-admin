@@ -10,6 +10,7 @@ interface IProps {
   modalVisible : boolean;
   roleData : any;
   partmentData : any;
+  nationalityData: any;
   dispatch : Dispatch;
   modalData : {
     [key : string]: any;
@@ -31,7 +32,7 @@ IState > {
   };
 
   componentDidMount() {
-    const {roleData, partmentData, dispatch} = this.props
+    const {roleData, partmentData, nationalityData, dispatch} = this.props
     if (roleData.length <= 0) {
       dispatch({
         type: 'global/fetchRole',
@@ -44,6 +45,15 @@ IState > {
     if (partmentData.length <= 0) {
       dispatch({
         type: 'global/fetchPartment',
+        payload: {
+          pageNum: 1,
+          pageSize: 100
+        }
+      });
+    }
+    if (nationalityData.length <= 0) {
+      dispatch({
+        type: 'global/fetchNationality',
         payload: {
           pageNum: 1,
           pageSize: 100
@@ -81,14 +91,15 @@ IState > {
 
   modalFromColumns() {
     const {
+      nationalityData,
       roleData,
       partmentData,
       modalData: {
         userName,
+        notiality,
         sex,
         phoneNo,
         roleId,
-        idCard,
         departId
       }
     } = this.props;
@@ -110,17 +121,9 @@ IState > {
         required: true,
         placeholder: '请选择性别',
         dataSource: SEX_TYPE
-      },{
-        title: '身份证号',
-        dataIndex: 'idCard',
-        componentType: 'Input',
-        initialValue: idCard,
-        requiredMessage: '请输入身份证号',
-        required: true,
-        placeholder: '请输入身份证号'
       }, {
         title: '联系电话',
-        dataIndex: 'roleName',
+        dataIndex: 'phoneNo',
         componentType: 'Input',
         initialValue: phoneNo,
         requiredMessage: '请输入联系电话',
@@ -128,13 +131,13 @@ IState > {
         placeholder: '请输入联系电话'
       }, {
         title: '名族',
-        dataIndex: 'sex',
+        dataIndex: 'notiality',
         componentType: 'Select',
-        initialValue: sex,
+        initialValue: notiality,
         requiredMessage: '请选择性别',
         required: true,
         placeholder: '请选择性别',
-        dataSource: SEX_TYPE
+        dataSource: nationalityData
       }, {
         title: '所在部门',
         dataIndex: 'departId',
@@ -180,4 +183,4 @@ IState > {
   }
 }
 
-export default connect(({global} : ConnectState) => ({roleData: global.roleData, partmentData: global.partmentData}))(AddRole);
+export default connect(({global} : ConnectState) => ({roleData: global.roleData,nationalityData: global.nationalityData, partmentData: global.partmentData}))(AddRole);

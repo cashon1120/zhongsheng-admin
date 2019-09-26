@@ -37,6 +37,13 @@ IState > {
         message.error(res.msg)
         return
       }
+      dispatch({
+        type: 'global/fetchVoltage',
+        payload: {
+          pageNum: 1,
+          pageSize: 100
+        }
+      });
       onOk(fields);
     };
     const productionDate = moment(fields.productionDate).format('YYYY-MM-DD HH:mm:ss')
@@ -59,7 +66,6 @@ IState > {
         productionDate,
         lowVoltageAlarmValue,
         automaticPoweroffValue,
-        batteryVehicleModels,
         remark
       }
     } = this.props;
@@ -72,14 +78,6 @@ IState > {
         requiredMessage: '请输入电瓶型号',
         required: true,
         placeholder: '请输入电瓶型号'
-      }, {
-        title: '生产厂家',
-        dataIndex: 'factory',
-        componentType: 'Input',
-        initialValue: factory,
-        requiredMessage: '请输入生产厂家',
-        required: true,
-        placeholder: '请输入生产厂家'
       }, {
         title: '生产日期',
         dataIndex: 'productionDate',
@@ -104,14 +102,6 @@ IState > {
         requiredMessage: '请输入电压自动断电值',
         required: true,
         placeholder: '请输入电压自动断电值'
-      }, {
-        title: '搭配车辆型号',
-        dataIndex: 'batteryVehicleModels',
-        componentType: 'Select',
-        initialValue: batteryVehicleModels,
-        requiredMessage: '请选择车辆型号',
-        placeholder: '请选择车辆型号',
-        dataSource: []
       }, {
         title: '备注',
         dataIndex: 'remark',

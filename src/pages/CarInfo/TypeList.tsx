@@ -43,48 +43,36 @@ class VoltageList extends Component<IProps, IState> {
   columns = [
     {
       title: '车辆品牌',
-      dataIndex: 'model',
-      key: 'model',
+      dataIndex: 'vehicleBrands',
+      key: 'vehicleBrands',
     },
     {
       title: '车辆型号',
-      dataIndex: 'factory',
-      key: 'factory',
-    },{
-      title: '生产厂家',
-      dataIndex: 'productionDate',
-      key: 'productionDate',
-    },{
-      title: '生产日期',
-      dataIndex: 'lowVoltageAlarmValue',
-      key: 'lowVoltageAlarmValue',
-    },{
-      title: '电瓶生产厂家',
-      dataIndex: 'automaticPoweroffValue',
-      key: 'automaticPoweroffValue',
+      dataIndex: 'vehicleModel',
+      key: 'vehicleModel',
     },{
       title: '电瓶型号',
-      dataIndex: 'batteryVehicleModels',
-      key: 'batteryVehicleModels',
+      dataIndex: 'batteryModel',
+      key: 'batteryModel',
     },{
       title: '电压报警值',
-      dataIndex: 'remark',
-      key: 'remark',
+      dataIndex: 'voltageAlarmValue',
+      key: 'voltageAlarmValue',
     },{
       title: '电压断电值',
-      dataIndex: 'createAt',
-      key: 'createAt',
+      dataIndex: 'voltageCutoff',
+      key: 'voltageCutoff',
     },{
       title: '添加日期',
-      dataIndex: 'createAt',
-      key: 'createAt',
+      dataIndex: 'crtAt',
+      key: 'crtAt',
     },
     {
       title: '操作',
       width: 200,
       render: (record: any) => (
         <div className="table-operate">
-          <a onClick={() => this.handleEdit(record)}>修改</a>
+          {/* <a onClick={() => this.handleEdit(record)}>修改</a> */}
           <a onClick={() => this.handleDel(record.id)}>删除</a>
         </div>
       ),
@@ -118,7 +106,7 @@ class VoltageList extends Component<IProps, IState> {
 
     if (dispatch) {
       dispatch({
-        type: 'carInfo/fetchVoltage',
+        type: 'carInfo/fetchType',
         payload: {
           ...searchParams,
           ...pageInfo,
@@ -177,7 +165,7 @@ class VoltageList extends Component<IProps, IState> {
       onOk: () => {
         if (dispatch) {
           dispatch({
-            type: 'carInfo/delVoltage',
+            type: 'carInfo/delType',
             payload: {
               id,
             },
@@ -252,7 +240,7 @@ class VoltageList extends Component<IProps, IState> {
               />
             </div>
             <div>
-                <Button type="primary"onClick={this.handleAddNew}>添加型号</Button>
+                <Button type="primary"onClick={this.handleAddNew}>添加车型</Button>
             </div>
           </div>
           <StandardTable
@@ -275,6 +263,6 @@ class VoltageList extends Component<IProps, IState> {
 }
 
 export default connect(({ carInfo, loading }: ConnectState) => ({
-  data: carInfo.voltageData,
+  data: carInfo.typeData,
   loading: loading.models.carInfo,
 }))(VoltageList);

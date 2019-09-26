@@ -37,6 +37,7 @@ interface FormProps extends FormComponentProps {
   visible?: boolean;
   confirmLoading?: boolean;
   isfooter?: boolean;
+  onRefChild?: (compenent: any) => void
 
   onOk: (param?: object) => void;
   onCancel: () => void;
@@ -51,9 +52,29 @@ interface IcolumnsObj {
 }
 
 class ModalFrom extends Component<FormProps, IState> {
+
   state = {
     loading: false
   }
+
+  componentDidMount(){
+    const {onRefChild} = this.props
+    if(onRefChild){
+      onRefChild(this)
+    }
+  }
+
+  //
+  clearFormValue = (filed: string, value: any) => {
+    const { form} = this.props
+    setTimeout(()=>{
+      form.setFieldsValue({
+        [filed]: value || undefined
+      })
+  },0)
+    
+  }
+
   render() {
     const {
       form,
@@ -148,8 +169,8 @@ class ModalFrom extends Component<FormProps, IState> {
               item.componentType === 'RangePicker' ||
               item.componentType === 'Upload' ||
               item.componentType === 'AreaCascader' ||
-              // item.componentType === 'InputNumber' ||
-              item.componentType === 'Cascader'
+              item.componentType === 'InputNumber' ||
+              item.componentType === 'Cascader' 
             ) {
               // 这些类型的规则如果加了 min 和 validator 要出问题...
               rulesObj = [
@@ -161,6 +182,7 @@ class ModalFrom extends Component<FormProps, IState> {
             } else {
               rulesObj = [
                 {
+                  max: item.maxLength || 30,
                   required: item.required || false,
                   message: item.requiredMessage || '',
                   min: item.requiredmin || 1,
@@ -225,9 +247,9 @@ class ModalFrom extends Component<FormProps, IState> {
                             {(fItem.dataSource || []).map((selData: any) => (
                               <Option
                                 key={`selectIndex${selData.value || selData.id}`}
-                                value={selData.value || selData.id}
+                                value={(fItem.value && selData[fItem.value]) || selData.value || selData.id}
                               >
-                                {selData.title || selData.model || (fItem.selectName && selData[fItem.selectName])}
+                                {selData.title || selData.name || selData.model || (fItem.selectName && selData[fItem.selectName])}
                               </Option>
                             ))}
                           </Select>

@@ -4,6 +4,7 @@ import {connect} from 'dva';
 import 'antd/dist/antd.css';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import StandardTable from '@/components/StandardTable';
+import ModalFrom from '@/components/ModalForm';
 import TableSearch from '../../components/TableSearch';
 import {ConnectProps, ConnectState} from '@/models/connect';
 import AddNew from './UserAdd';
@@ -19,6 +20,8 @@ interface IProps extends ConnectProps {
 interface IState {
   loading : boolean;
   modalVisible : boolean;
+  editId : string;
+  disableModalVisible : boolean;
   modalData : any;
   searchData : {
     [key : string]: any;
@@ -34,6 +37,8 @@ IState > {
   state = {
     loading: false,
     modalVisible: false,
+    editId: '',
+    disableModalVisible: false,
     modalData: {},
     searchData: {},
     pageInfo: {
@@ -51,13 +56,9 @@ IState > {
       title: '性别',
       dataIndex: 'sex',
       key: 'sex',
-      render : (sex: number) => {
+      render: (sex : number) => {
         return <span>{formatSex(sex)}</span>
       }
-    }, {
-      title: '身份证号码',
-      dataIndex: 'idCard',
-      key: 'idCard'
     }, {
       title: '联系方式',
       dataIndex: 'phoneNo',
@@ -71,16 +72,36 @@ IState > {
       dataIndex: 'realName',
       key: 'realName'
     }, {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status : number) => {
+        let str = ''
+        switch (status) {
+          case 1:
+            str = '正常'
+            break;
+          case 2:
+            str = '禁用'
+            break;
+
+          default:
+            str = '注销'
+            break;
+        }
+        return str
+      }
+    }, {
       title: '添加时间',
       dataIndex: 'createTime',
       key: 'createTime'
     }, {
       title: '操作',
-      width: 200,
+      width: 250,
       render: (record : any) => (
         <div className="table-operate">
           <a onClick={() => this.handleEdit(record)}>修改</a>
-          <a onClick={() => this.handleDisable(record.id)}>禁用</a>
+          <a onClick={() => this.handleDisable(record.id)}>设置状态</a>
           <a onClick={() => this.handleResetPwd(record.id)}>重置密码</a>
         </div>
       )
@@ -130,6 +151,31 @@ IState > {
     this.initData()
   };
 
+  modalFromColumns = () => {
+    return [
+      {
+        title: '状态',
+        dataIndex: 'state',
+        componentType: 'Select',
+        requiredMessage: '请选择禁用状态',
+        required: true,
+        dataSource: [
+          {
+            name: '正常',
+            value: 1
+          }, {
+            name: '禁用',
+            value: 2
+          }, {
+            name: '注销',
+            value: 3
+          }
+        ],
+        placeholder: '请选择禁用状态'
+      }
+    ];
+  }
+
   // 显示/隐藏模态框
   handleTriggerModal = () => {
     const {modalVisible} = this.state;
@@ -177,28 +223,10 @@ IState > {
     });
   };
 
-  // 禁用用户
   handleDisable = (id : string) => {
-    const {dispatch} = this.props;
-    const callback = (res : any) => {
-      if (res.code === 1) {
-        message.success(res.msg);
-      } else {
-        message.error(res.msg)
-      }
-    };
-    confirm({
-      title: '系统提示',
-      content: '确认要禁用该用户吗？',
-      onOk: () => {
-        if (dispatch) {
-          dispatch({type: 'system/disableUser', payload: {
-              id
-            }, callback});
-        }
-      }
-    });
-  };
+    this.setState({editId: id})
+    this.handleTriggerDisableModal()
+  }
 
   // 配置搜索条件
   getSerarchColumns = () => {
@@ -238,9 +266,41 @@ IState > {
     },);
   };
 
+  handleTriggerDisableModal = () => {
+    const {disableModalVisible} = this.state;
+    this.setState({
+      disableModalVisible: !disableModalVisible
+    });
+  };
+
+  handleSubmitDisableModal = (fields : any) => {
+    const {dispatch} = this.props;
+    const {editId} = this.state
+    this.setState({loading: true});
+    // 定义异步回调
+    const callback = (res : any) => {
+      if (res.code === 1) {
+        message.success('操作成功')
+      } else {
+        message.error(res.data)
+      }
+      this.handleTriggerDisableModal()
+      this.initData()
+      this.setState({loading: false});
+    };
+    const payload = {
+      id: editId,
+      status: fields.state
+    }
+
+    if (dispatch) {
+      dispatch({type: 'system/disableUser', payload, callback});
+    }
+  }
+
   render() {
     const {data, loading} = this.props;
-    const {modalVisible, modalData} = this.state
+    const {modalVisible, modalData, disableModalVisible} = this.state
     return (
       <PageHeaderWrapper>
         <Card>
@@ -267,6 +327,14 @@ IState > {
           modalData={modalData}
           onCancel={this.handleTriggerModal}
           onOk={this.handleSubmitModal}/>
+
+        <ModalFrom
+          title='复审'
+          columns={this.modalFromColumns()}
+          onOk={this.handleSubmitDisableModal}
+          visible={disableModalVisible}
+          confirmLoading={loading}
+          onCancel={this.handleTriggerDisableModal}/>
       </PageHeaderWrapper>
     );
   }

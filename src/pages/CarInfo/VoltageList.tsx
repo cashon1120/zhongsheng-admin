@@ -45,11 +45,6 @@ class VoltageList extends Component<IProps, IState> {
       title: '电瓶型号',
       dataIndex: 'model',
       key: 'model',
-    },
-    {
-      title: '生产厂家',
-      dataIndex: 'factory',
-      key: 'factory',
     },{
       title: '生产日期',
       dataIndex: 'productionDate',
@@ -62,10 +57,6 @@ class VoltageList extends Component<IProps, IState> {
       title: '电压断电值',
       dataIndex: 'automaticPoweroffValue',
       key: 'automaticPoweroffValue',
-    },{
-      title: '搭配车型',
-      dataIndex: 'batteryVehicleModels',
-      key: 'batteryVehicleModels',
     },{
       title: '备注',
       dataIndex: 'remark',
