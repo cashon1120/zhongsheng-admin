@@ -130,15 +130,6 @@ IState > {
         required: true,
         placeholder: '请输入联系电话'
       }, {
-        title: '名族',
-        dataIndex: 'notiality',
-        componentType: 'Select',
-        initialValue: notiality,
-        requiredMessage: '请选择性别',
-        required: true,
-        placeholder: '请选择性别',
-        dataSource: nationalityData
-      }, {
         title: '所在部门',
         dataIndex: 'departId',
         selectName: 'departName',

@@ -58,49 +58,42 @@ IState > {
 
   columns = [
     {
+      title: '车牌号',
+      key: 'plate',
+      dataIndex: 'plate'
+    }, 
+    {
       title: '汽车品牌',
       key: 'vehicleName',
       dataIndex: 'vehicleName'
     }, {
-      title: '车牌号',
-      key: 'plate',
-      dataIndex: 'plate'
+      title: '车辆型号',
+      key: 'vehicleName',
+      dataIndex: 'vehicleName'
     }, {
-      title: '车主姓名',
+      title: '实时公里数',
       dataIndex: 'concatName',
       key: 'concatName'
     }, {
-      title: '联系方式',
+      title: '下次保养公里数',
       dataIndex: 'concatPhone',
       key: 'concatPhone'
     }, {
-      title: '设备失联时间',
+      title: '下次保养时间',
       dataIndex: 'exceptionTime',
       key: 'exceptionTime'
     }, {
-      title: '电瓶断电方式',
+      title: '保养状态',
       dataIndex: 'powerOffMode',
       key: 'powerOffMode'
-    }, {
-      title: '救援时间',
-      dataIndex: 'rescueTime',
-      key: 'rescueTime'
-    }, {
-      title: '设备恢复时间',
-      dataIndex: 'recoveryTime',
-      key: 'recoveryTime'
-    }, {
-      title: '救援人员',
-      dataIndex: 'personnelName',
-      key: 'personnelName'
-    }, {
+    },{
       title: '操作',
       width: 100,
       render: (record : any) => (
         <div className="table-operate">
           <a onClick={() => this.handleSetState(record)}>{record.state === 1
               ? '查看'
-              : '汇报'}</a>
+              : '保养汇报'}</a>
         </div>
       )
     }
@@ -205,9 +198,21 @@ getSerarchColumns = () => {
       dataIndex: 'concatPhone',
       componentType: 'Input'
     },{
-      title: '车载设备',
+      title: '保养状态',
       dataIndex: 'personnelName',
-      componentType: 'Input'
+      componentType: 'Select',
+      dataSource: [
+        {
+          title: '保养已超期',
+          value: 1
+        }, {
+          title: '保养时间临近',
+          value: 2
+        }, {
+          title: '正常',
+          value: 3
+        }
+      ]
     }
   ];
   return serarchColumns;

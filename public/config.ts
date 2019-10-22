@@ -27,7 +27,7 @@ export const submitFormLayout = {
 export const API_URL = '/api/'
 
 // 图片上传地址
-export const UPLOAD_URL = 'http://192.168.70.100:8082/upload/file'
+export const UPLOAD_URL = '/api/upload/file'
 
 // 电压状态枚举
 export const VOLTAGE_STATE = [

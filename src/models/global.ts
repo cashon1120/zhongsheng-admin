@@ -3,6 +3,8 @@ import {Effect} from './connect.d';
 import {fetchVoltage, fetchType} from '@/services/carInfo';
 import {fetchRole, fetchPartment} from '@/services/system';
 import {fetchProfession, fetchNationality} from '@/services/global'
+import {fetchDriver} from '@/services/carInfo';
+import { fetchUser } from '@/services/system';
 
 export interface GlobalModelState {
   collapsed : boolean;
@@ -12,6 +14,8 @@ export interface GlobalModelState {
   typeData : any;
   professionData : any;
   nationalityData : any;
+  userData: any
+  driverData: any
 }
 
 export interface GlobalModelType {
@@ -24,6 +28,8 @@ export interface GlobalModelType {
     fetchType: Effect;
     fetchProfession: Effect;
     fetchNationality: Effect;
+    fetchUser: Effect;
+    fetchDriver: Effect
   };
   reducers : {
     saveVoltageData: Reducer < {} >;
@@ -32,6 +38,8 @@ export interface GlobalModelType {
     saveTypeData: Reducer < {} >;
     saveProfessionData: Reducer < {} >;
     saveNationalityData: Reducer < {} >;
+    saveUserData: Reducer < {} >;
+    saveDriverData: Reducer < {} >;
   };
 }
 
@@ -44,7 +52,9 @@ const GlobalModel : GlobalModelType = {
     partmentData: [],
     typeData: [],
     professionData: [],
-    nationalityData: []
+    nationalityData: [],
+    userData: [],
+    driverData: []
   },
 
   effects: {
@@ -99,6 +109,22 @@ const GlobalModel : GlobalModelType = {
       if (response) {
         yield put({type: 'saveNationalityData', payload: response});
       }
+    },
+    *fetchUser({
+      payload
+    }, {put, call}) {
+      const response = yield call(fetchUser, payload);
+      if (response) {
+        yield put({type: 'saveUserData', payload: response});
+      }
+    },
+    *fetchDriver({
+      payload
+    }, {put, call}) {
+      const response = yield call(fetchDriver, payload);
+      if (response) {
+        yield put({type: 'saveDriverData', payload: response});
+      }
     }
   },
 
@@ -137,6 +163,19 @@ const GlobalModel : GlobalModelType = {
       return {
         ...state,
         nationalityData: payload.data
+      };
+    },
+    saveUserData(state, {payload}) {
+      return {
+        ...state,
+        userData: payload.data.list
+      };
+    },
+    saveDriverData(state, {payload}) {
+      console.log(payload.data.list)
+      return {
+        ...state,
+        driverData: payload.data.list
       };
     }
   }

@@ -181,18 +181,14 @@ class VoltageList extends Component<IProps, IState> {
     const serarchColumns = [
       {
         title: '车辆品牌',
-        dataIndex: 'model',
+        dataIndex: 'vehicleBrands',
         componentType: 'Input',
       },
       {
         title: '车辆型号',
-        dataIndex: 'type',
+        dataIndex: 'vehicleModel',
         componentType: 'Input',
-      },{
-        title: '生产日期',
-        dataIndex: 'time',
-        componentType: 'DatePicker',
-      },
+      }
     ];
     return serarchColumns;
   };

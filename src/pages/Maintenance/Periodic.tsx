@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import {Modal, Input, message, Card} from 'antd';
+import {Modal, Input, message, Card, Button} from 'antd';
 import {connect} from 'dva';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import StandardTable from '@/components/StandardTable';
 import {ConnectProps, ConnectState} from '@/models/connect';
 import TableSearch from '../../components/TableSearch';
+import AddNew from './PeriodicAdd';
 const {TextArea} = Input;
 
 interface IProps extends ConnectProps {
@@ -16,13 +17,10 @@ interface IProps extends ConnectProps {
 interface IState {
   loading : boolean;
   modalVisible : boolean;
-  editData : {
-    [key : string]: any
-  };
+  modalData: any;
   searchData : {
     [key : string]: any;
   };
-  processings : any[]
   pageInfo : {
     pageSize: number;
     pageNum: number;
@@ -36,19 +34,7 @@ IState > {
     loading: false,
     modalVisible: false,
     searchData: {},
-    editData: {
-      id: 0,
-      vehicleName: '',
-      exceptionCode: 0,
-      exceptionTime: '',
-      concatName: '',
-      concatPhone: '',
-      lat: '',
-      lng: '',
-      plate: '',
-      personnelName: ''
-    },
-    processings: [],
+    modalData: {},
     pageInfo: {
       pageSize: 10,
       pageNum: 1
@@ -62,45 +48,19 @@ IState > {
       key: 'vehicleName',
       dataIndex: 'vehicleName'
     }, {
-      title: '车牌号',
+      title: '车辆型号',
       key: 'plate',
       dataIndex: 'plate'
     }, {
-      title: '车主姓名',
+      title: '保养频率',
       dataIndex: 'concatName',
       key: 'concatName'
-    }, {
-      title: '联系方式',
-      dataIndex: 'concatPhone',
-      key: 'concatPhone'
-    }, {
-      title: '设备失联时间',
-      dataIndex: 'exceptionTime',
-      key: 'exceptionTime'
-    }, {
-      title: '电瓶断电方式',
-      dataIndex: 'powerOffMode',
-      key: 'powerOffMode'
-    }, {
-      title: '救援时间',
-      dataIndex: 'rescueTime',
-      key: 'rescueTime'
-    }, {
-      title: '设备恢复时间',
-      dataIndex: 'recoveryTime',
-      key: 'recoveryTime'
-    }, {
-      title: '救援人员',
-      dataIndex: 'personnelName',
-      key: 'personnelName'
-    }, {
+    },  {
       title: '操作',
       width: 100,
       render: (record : any) => (
         <div className="table-operate">
-          <a onClick={() => this.handleSetState(record)}>{record.state === 1
-              ? '查看'
-              : '汇报'}</a>
+          <a onClick={() => this.handleSetState(record)}>修改</a>
         </div>
       )
     }
@@ -150,37 +110,18 @@ IState > {
       });
     }
   }
-
-  handleOk = (e : any) => {
-    const {dispatch} = this.props
-    const {editData, remark} = this.state
-    if (remark === '') {
-      message.error('请输入汇报内容')
-      return
-    }
-    const callback = (res : any) => {
-      if (res.code === 1) {
-        this.initData()
-        this.setState({modalVisible: false});
-      } else {
-        message.error(res.msg)
-      }
-    }
-    if (dispatch) {
-      dispatch({
-        type: 'voltage/complete',
-        payload: {
-          id: editData.id,
-          processingRemark: remark
-        },
-        callback
-      });
-    }
-
+  // 提交模态框
+  handleSubmitModal = () => {
+    this.handleTriggerModal();
+    this.initData()
   };
 
-  handleCancel = (e : any) => {
-    this.setState({modalVisible: false});
+  // 显示/隐藏模态框
+  handleTriggerModal = () => {
+    const { modalVisible } = this.state;
+    this.setState({
+      modalVisible: !modalVisible,
+    });
   };
 
   TextAreaChange = (e: any) => {
@@ -193,20 +134,12 @@ IState > {
 getSerarchColumns = () => {
   const serarchColumns = [
     {
-      title: '车牌号',
+      title: '车辆品牌',
       dataIndex: 'plate',
       componentType: 'Input'
     }, {
-      title: '车主姓名',
+      title: '车辆型号',
       dataIndex: 'ownerName',
-      componentType: 'Input'
-    }, {
-      title: '车主联系方式',
-      dataIndex: 'concatPhone',
-      componentType: 'Input'
-    },{
-      title: '车载设备',
-      dataIndex: 'personnelName',
       componentType: 'Input'
     }
   ];
@@ -235,9 +168,17 @@ handleFormReset = () => {
   },);
 };
 
+ // 添加新数据
+ handleAddNew = () => {
+  this.setState({
+    modalData: {},
+  });
+  this.handleTriggerModal();
+};
+
   render() {
     const {data, loading} = this.props;
-    const {modalVisible, editData} = this.state
+    const {modalVisible, modalData} = this.state
     return (
       <PageHeaderWrapper>
         <Card>
@@ -248,6 +189,9 @@ handleFormReset = () => {
                 handleSearch={this.handleSearch}
                 handleFormReset={this.handleFormReset}/>
             </div>
+            <div>
+            <Button type="primary"onClick={this.handleAddNew}>保养频率设置</Button>
+            </div>
           </div>
           <StandardTable
             rowKey="id"
@@ -256,28 +200,13 @@ handleFormReset = () => {
             loading={loading}
             onChangeCombine={(params : object) => this.initData(params)}/>
         </Card>
-        <Modal
-          title="救援详情"
-          visible={modalVisible}
-          confirmLoading={loading}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}>
-          <h3>{editData.plate}</h3>
-          {editData.vehicleName}
-          {/* {formartVoltageState(editData.exceptionCode)} */}
-          <ul className="vlotageDetail">
-            <li>
-              <span className="lable">救援人员:</span>
-              {editData.personnelName}
-            </li>
-            <li>
-              <span className="lable">结果汇报:</span>
-              <div className="selectWrapper">
-                <TextArea onChange={(e) => this.TextAreaChange(e)}/>
-              </div>
-            </li>
-          </ul>
-        </Modal>
+        <AddNew
+          modalVisible={modalVisible}
+          modalData={modalData}
+          onCancel={this.handleTriggerModal}
+          onOk={this.handleSubmitModal}
+        />
+
       </PageHeaderWrapper>
     );
   }

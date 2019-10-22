@@ -121,6 +121,24 @@ export default {
         },
 
         {
+          path: '/maintenance',
+          name: 'maintenance',
+          icon: 'tool',
+          routes: [
+            {
+              path: '/maintenance/List',
+              name: 'list',
+              component: './Maintenance/List',
+            },
+            {
+              path: '/maintenance/periodic',
+              name: 'periodic',
+              component: './Maintenance/Periodic',
+            },
+          ],
+        },
+
+        {
           path: '/CarInfo',
           name: 'carInfo',
           icon: 'car',

@@ -52,7 +52,7 @@ IState > {
       title: '汽车品牌',
       dataIndex: 'brands',
       key: 'brands'
-    },{
+    }, {
       title: '车辆型号',
       dataIndex: 'model',
       key: 'model'
@@ -193,12 +193,39 @@ IState > {
   getSerarchColumns = () => {
     const serarchColumns = [
       {
-        title: '电频型号',
-        dataIndex: 'model',
+        title: '车牌号',
+        dataIndex: 'plate',
         componentType: 'Input'
       }, {
-        title: '车辆型号',
-        dataIndex: 'type',
+        title: '电压状态',
+        dataIndex: 'voltageState',
+        componentType: 'Select',
+        dataSource: [
+          {
+            title: '正常',
+            value: 1
+          }, {
+            title: '低电压报警',
+            value: 2
+          }, {
+            title: '设备失联',
+            value: 3
+          }, {
+            title: '断电中',
+            value: 4
+          }
+        ]
+      }, {
+        title: '车主姓名',
+        dataIndex: 'ownerName',
+        componentType: 'Input'
+      }, {
+        title: '车主联系方式',
+        dataIndex: 'ownerContact',
+        componentType: 'Input'
+      },{
+        title: '车载设备',
+        dataIndex: 'vehicleEquipmentId',
         componentType: 'Input'
       }
     ];

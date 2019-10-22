@@ -6,9 +6,7 @@ import { GlobalModelState } from './global';
 import { DefaultSettings as SettingModelState } from '../../config/defaultSettings';
 import { UserModelState } from './user';
 import { LoginModelState } from './login';
-import { UserInfoModelState } from './userInfo';
-import { ReportModelState } from './report';
-import { QcodeModelState } from './qcode';
+import { VoltageModelState } from './voltage';
 import { SystemModelState } from './system';
 import { CarInfoModelState } from './carInfo';
 
@@ -17,7 +15,7 @@ export {
   SettingModelState,
   UserModelState,
   LoginModelState,
-  UserInfoModelState,
+  VoltageModelState,
   SystemModelState,
   CarInfoModelState,
 };
@@ -30,6 +28,7 @@ export interface Loading {
     login?: boolean;
     carInfo?: boolean;
     system?: boolean
+    voltage?: boolean
   };
 }
 
@@ -39,6 +38,7 @@ export interface ConnectState {
   settings: SettingModelState;
   carInfo: CarInfoModelState;
   system: SystemModelState
+  voltage: VoltageModelState
 }
 
 export type Effect = (

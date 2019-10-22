@@ -2,9 +2,13 @@ export default {
   'menu.index': '首页',
   'menu.more-blocks': '更多区块',
 
-  'menu.voltage': '汽车电压监控',
+  'menu.voltage': '汽车电压',
   'menu.voltage.watch': '汽车电压监控',
   'menu.voltage.help': '汽车电瓶救援记录',
+
+  'menu.maintenance': '车辆保养',
+  'menu.maintenance.list': '车辆保养',
+  'menu.maintenance.periodic': '车辆保养频率',
 
   'menu.carInfo': '车辆车主信息',
   'menu.carInfo.carList': '车辆信息',

@@ -3,7 +3,6 @@ import {connect} from 'dva';
 import {Dispatch} from 'redux';
 import {ConnectState} from '../../models/connect';
 import ModalFrom from '@/components/ModalForm';
-import moment from 'moment';
 import {message} from 'antd';
 import {ANNUAL_INCOME, SEX_TYPE} from '../../../public/config'
 
@@ -23,8 +22,8 @@ interface IState {
   confirmLoading : boolean;
   voltageAlarmValue : number,
   voltageAutomaticPoweroffValue : number,
-  cardFrontUrl : string
-  reverseSideCardUrl : string
+  cardFront: string | ''
+  reverseSideCard: string | ''
 }
 
 class AddDriver extends Component < IProps,
@@ -33,8 +32,8 @@ IState > {
     confirmLoading: false,
     voltageAlarmValue: 0,
     voltageAutomaticPoweroffValue: 0,
-    cardFrontUrl: '',
-    reverseSideCardUrl: ''
+    cardFront: '',
+    reverseSideCard: ''
   };
 
   componentDidMount() {
@@ -60,12 +59,55 @@ IState > {
     }
   }
 
+
+  handleUploadChange = (name: string, fileList : any) => {
+    if (fileList.length > 0) {
+      const imgUrl = fileList[0].response && fileList[0].response.data
+      if(name === 'cardFront'){
+        this.setState({
+          cardFront: imgUrl
+        })
+      }
+      if(name === 'reverseSideCard'){
+        this.setState({
+          reverseSideCard: imgUrl
+        })
+      }
+    }else{
+      if(name === 'cardFront'){
+        this.setState({
+          cardFront: ''
+        })
+      }
+      if(name === 'reverseSideCard'){
+        this.setState({
+          reverseSideCard: ''
+        })
+      }
+    }
+  }
+
+  componentWillReceiveProps(nextProps : any) {
+    const {
+      modalData: {
+        cardFront,
+        reverseSideCard
+      }
+    } = nextProps
+    if(cardFront){
+      this.setState({
+        cardFront,
+        reverseSideCard
+      })
+    }
+  }
+
   handleSubmitModal = (fields : any) => {
     const {onOk, dispatch, modalData: {
         id
       }} = this.props;
     this.setState({confirmLoading: true});
-
+      const {cardFront, reverseSideCard} = this.state
     // 定义异步回调
     const callback = (res : any) => {
       this.setState({confirmLoading: false});
@@ -75,8 +117,6 @@ IState > {
       }
       onOk(fields);
     };
-    const factoryTime = moment(fields.factoryTime).format('YYYY-MM-DD HH:mm:ss')
-    const purchaseTime = moment(fields.purchaseTime).format('YYYY-MM-DD HH:mm:ss')
     dispatch({
       type: id
         ? 'carInfo/updateDriver'
@@ -84,19 +124,15 @@ IState > {
       payload: {
         id,
         ...fields,
-        factoryTime,
-        purchaseTime
+        cardFront,
+        reverseSideCard
       },
       callback
     });
   };
 
-  handleUploadChange = (e : any) => {
-    console.log(e)
-  }
-
   modalFromColumns() {
-    const {cardFrontUrl, reverseSideCardUrl} = this.state
+    const {cardFront, reverseSideCard} = this.state
     const {
       professionData,
       nationalityData,
@@ -109,8 +145,6 @@ IState > {
         industry,
         annualIncome,
         residentialAddress,
-        cardFront,
-        reverseSideCard,
         remarks
       }
     } = this.props;
@@ -187,19 +221,16 @@ IState > {
         title: '身份证正面',
         dataIndex: 'cardFront',
         componentType: 'Upload',
-        initialValue: cardFront,
         requiredMessage: '请上传身份证正面',
-        // required: true,
         handleChange: this.handleUploadChange,
-        imgUrl: cardFrontUrl
+        pictures: cardFront
       }, {
         title: '身份证反面',
         dataIndex: 'reverseSideCard',
         componentType: 'Upload',
-        initialValue: reverseSideCard,
         requiredMessage: '请上传身份证反面',
-        // required: true,
-        imgUrl: reverseSideCardUrl
+        handleChange: this.handleUploadChange,
+        pictures: reverseSideCard
       }, {
         title: '备注',
         dataIndex: 'remark',

@@ -165,7 +165,7 @@ class TableSearch extends PureComponent<FormProps, {}> {
                                   key={selData.id ? selData.id : `selectIndex${selData.value}`}
                                   value={selData.id ? selData.id : selData.value}
                                 >
-                                  {selData.name || (fItem.selectName && selData[fItem.selectName])}
+                                  {selData.name || selData.title || (fItem.selectName && selData[fItem.selectName])}
                                 </Option>
                               ))}
                           </Select>

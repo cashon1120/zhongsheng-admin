@@ -313,6 +313,7 @@ class ModalFrom extends Component<FormProps, IState> {
                             disabled={fItem.disabled}
                             type={fItem.type ? fItem.type : 'text'}
                             placeholder={fItem.placeholder ? fItem.placeholder : '请输入'}
+                            onChange={e => fItem.onChange && fItem.onChange(e, form)}
                             className={fItem.childclassName}
                           />
                         );
@@ -345,7 +346,6 @@ class ModalFrom extends Component<FormProps, IState> {
                           <UploadImg
                             dataSource={fItem.pictures || []}
                             form={form}
-                            maxImgLen={4}
                             name={fItem.dataIndex}
                             onChange={fItem.handleChange}
                           />
